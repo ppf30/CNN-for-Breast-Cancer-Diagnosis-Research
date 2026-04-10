@@ -1,4 +1,4 @@
-from utils import DownSample, UpSample
+from unet.utils import DownSample, UpSample
 import torch
 from torch.nn import nn
 
