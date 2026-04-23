@@ -1,13 +1,13 @@
-from unet.utils import DownSample, UpSample
+from  unet.utils import DownSample, UpSample
 import torch
-from torch.nn import nn
+import torch.nn as nn
 
 
 class UNet(nn.Module):
     """ 
         Implementation of UNet general architecture
     """
-    def __init__(self, in_channels, num_classes):
+    def __init__(self, in_channels:int, num_classes:int):
         super().__init__()
 
         # Define the downsampling part
