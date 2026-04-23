@@ -1,12 +1,12 @@
-from utils import DownSample, UpSampleAttention
+from unet.utils import DownSample, UpSampleAttention
 import torch
-from torch.nn import nn
+import torch.nn as nn
 
 class AttentionUNet(nn.Module):
     """ 
         Implementation of AttentionUNet general architecture
     """
-    def __init__(self, in_channels, num_classes):
+    def __init__(self, in_channels:int, num_classes:int):
         super().__init__()
 
         # Define the downsampling part

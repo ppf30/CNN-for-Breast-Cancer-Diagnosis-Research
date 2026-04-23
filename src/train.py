@@ -1,51 +1,25 @@
 import sys
 import argparse
 from typing import Union
-from .unet.models import UNet, AttentionUNet
+from unet.models import UNet, AttentionUNet
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import DataLoader
 
 
-# Define the parser
-parser = argparse.ArgumentParser(description="Entrenamiento de UNet para segmentación")
 
-# Add arguments to the parser
-parser.add_argument("--batch_size", type=int, default=64, help = "Batch Size")
-parser.add_argument("--lr", type=float, default=0.001, help = "Learning Rate")
-parser.add_argument("--in_ch",type=int, default=64, help='Input Channels')
-parser.add_argument("--out_cl", type=int, default=6, help = "Output Classes")
-parser.add_argument("--model", type=int, default=6, help = "Model(attention_unet:'att'--unet:'base')")
-parser.add_argument("--epochs", type=int, default=6, help = "Training Epochs")
-
-# Parse args from Command Line Input
-args = parser.parse_args()
-
-
-# Define constant params
-BATCH_SIZE = args.batch_size
-LEARNING_RATE = args.lr
-IN_CHANNELS = args.in_ch
-CLASSES = args.out_cl
-EPOCHS = args.epochs
-
-
-# CREATE THE MODEL  
-params = {"in_channels": IN_CHANNELS, "num_classes":CLASSES}
-clean_req = args.model.strip().lower()
-device = 'gpu' if torch.cuda.is_available() else "cpu"
-model =  UNet(**params) if clean_req == "base" else AttentionUNet()
-model = model.to(device)
-
-
-def train(model:Union[UNet, AttentionUnet], batch_size:int, epochs:int)->Union[UNet, AttentionUnet]:
+def train(model:Union[UNet, AttentionUNet], dataloader:DataLoader, batch_size:int, epochs:int, device:str, path:str)->Union[UNet, AttentionUNet]:
     """ 
         Function aimed to train the given model 
         over a given dataset
 
         Params:
             model(Union[UNet, AttentionUnet]): The selected model
-            BATCH_SIZE(int): The input size per steps
-            EPOCHS(int): The number of epochs
+            dataloader(DataLoader): The object to sample batches from
+            batch_size(int): The input size per steps
+            epochs(int): The number of epochs
+            device(str): Define the device to use
+            PATH(str): Model's storing path
 
         Returns:
             model(Union[UNet, AttentionUnet]): The trained model 
@@ -56,17 +30,15 @@ def train(model:Union[UNet, AttentionUnet], batch_size:int, epochs:int)->Union[U
     model.train()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters())
-    # Assume we already have a dataloader (--)
-    ## to_do LOOK AT ME!!!!
 
 
     # Iterate over the different epochs
-    for epoch in range(EPOCHS):
+    for epoch in range(epochs):
         # Information print about the epoch
         print(f'EPOCH({epoch}):')
 
         # Run each batch
-        for i, batch in enumerate(data_loader):
+        for i, batch in enumerate(dataloader):
             
             # Divide between input and data
             data, labels = batch
@@ -91,42 +63,5 @@ def train(model:Union[UNet, AttentionUnet], batch_size:int, epochs:int)->Union[U
                 print(f"batch({i+1}):loss{loss}")
                 current_loss = 0
 
-
-def generate_outputs(dataloader:DataLoader, model:Union[UNet, AttentionUnet] = model)->TensorDataset:
-    """ 
-        Function aimed to generate data using a 
-        given model 
-
-        Params:
-            dataloader(DataLoader): The given dataset
-            model(Union[UNet, AttentionUnet]): The given model 
-
-        Returns:
-            dataset(TensorDataset): The dataset of (data, label) pairs
-    """
-
-
-    # Set the model to evaluation
-    model.eval()
-
-    # Define the storage structures
-    features = []
-    labels_list = []
-
-    # Generate the outputs
-    with torch.no_grad():
-        for data, labels in dataloader:
-            data = data.to(device)
-
-            # Get the output from the model 
-            output = model(data)
-            # Update the structures 
-            features.append(output.to(device = 'cpu'))
-            labels_list.append(labels)
-
-    # Concat the structures before returning
-    features = torch.cat(features)
-    labels_list = torch.cat(labels_list)
-
-    # Create the TrainDataset: indexable pair of (data, label)
-    return TorchDataset(features, labels_list)
+    # Save the trained model
+    torch.save(model.state_dict(),path)  
