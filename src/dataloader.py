@@ -3,7 +3,7 @@ import torch
 import tifffile as tif
 import numpy as np
 import random
-
+from torch.utils.data import DataLoader
 
 class TIFFSegmentationDataset(torch.utils.data.Dataset):
     def __init__(self, img_dir, mask_dir, patch_size=1024):
@@ -65,3 +65,18 @@ class TIFFSegmentationDataset(torch.utils.data.Dataset):
         mask = (mask > 0).float().unsqueeze(0)
 
         return image, mask
+    
+
+dataset = TIFFSegmentationDataset(
+    img_dir=img_dir,
+    mask_dir=mask_dir,
+    patch_size=1024
+)
+
+dataloader = DataLoader(
+    dataset,
+    batch_size=4,
+    shuffle=True,
+    num_workers=4,
+    pin_memory=True
+)
