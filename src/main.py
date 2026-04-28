@@ -13,9 +13,6 @@ from features import generate_outputs
 from unet.models import UNet, AttentionUNet
 
 
-# ORQUESTADO DEL PROCESO
-
-
 
 # Define the parser
 parser = argparse.ArgumentParser(description="Entrenamiento de UNet para segmentación")
@@ -44,21 +41,23 @@ path = './models'
 
 
 
-#TRAINING PROCESS
+#TRAINING PROCESS --> Train unet-> store the model -> get the data
 if args.mode == 'train':
 
     # Check model's storing path
     General.ensure_model_dir(path)
-    # Train unet-> store the model -> get the data
+    # Create the model
+    model = UNet(in_channels = args.in_ch, out_channels = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, out_channels = args.out_cl )
+    # Call training
     train(args.model, train_dataloader, args.batch_size, args.epochs, device, path)
 
 
-if args.mode=="features":
 # Train the CNN using the other dataset
-    generate_outputs(args.modelmodel, train_dataloader, device, path)
+if args.mode=="features":
+    model = UNet() if args.model =="unet" else AttentionUNet()
+    generate_outputs(model, train_dataloader, device, path)
 
 
 # TESTING PROCESS
 if args.mode == 'inference':
     pass
-# Test unet over validatin
