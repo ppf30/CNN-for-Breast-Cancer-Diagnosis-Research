@@ -5,15 +5,14 @@ from typing import Union
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from dataset import TIFFSegmentationDataset
-from general_utils import General
 from torch.utils.data import DataLoader
 
 # Files import
 from train import train
 from test import test
+from general_utils import General
 from unet.models import UNet, AttentionUNet
-from dataloader import TIFFSegmentationDataset
+from dataset import TIFFSegmentationDataset
 
 # Define the parser
 parser = argparse.ArgumentParser(description="Entrenamiento de UNet para segmentación")
@@ -37,50 +36,90 @@ IN_CHANNELS = args.in_ch
 CLASSES = args.out_cl
 EPOCHS = args.epochs
 device = 'cuda' if torch.cuda.is_available() else "cpu"
-path = './models'
-path_data = './data_cnn'
+
+# Paths to store models and generated data
+path_model = './models'
+path_data = './data_cnn/'
+
+# Define the model 
+model = UNet(in_channels = args.in_ch, out_channels = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, out_channels = args.out_cl )
 
 
-# Generate the DataLoader objects
-train_dataloader = TIFFSegmentationDataset()
-test_dataloader = TIFFSegmentationDataset()
+
 
 
 #TRAINING PROCESS --> Train unet-> store the model
 if args.mode == 'train':
+
+    # Retrieve data 
     dataset = TIFFSegmentationDataset(
         img_dir=r"dataset\TIFF Images\TIFF Images",
         mask_dir=r"dataset\ROI Masks\ROI Masks",
         patch_size=1024)
     
-    dataloader = DataLoader(
+    # Generate a DataLoader object for train
+    train_dataloader = DataLoader(
         dataset,
-        batch_size=4,
+        batch_size=args.batch_size,
         shuffle=True,
         num_workers=4,
         pin_memory=True
     )
 
     # Check model's storing path
-    General.ensure_dir(path)
-    # Create the model
-    model = UNet(in_channels = args.in_ch, out_channels = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, out_channels = args.out_cl )
-    # Call training
-    train(args.model, dataloader, args.batch_size, args.epochs, device, path)
+    General.ensure_dir(path_model)
 
 
-#TESTINGS PROCESS --> Evaluate a given model 
+    # Call training with the model
+    train(args.model, train_dataloader, args.epochs, device, path_model)
+
+
+#TESTING PROCESS --> Evaluate a given model 
 if args.mode=="test":
-    model = UNet() if args.model == "unet" else AttentionUNet()
-    test(model, test_dataloader, device, path, needed = False)
+
+    # Retrieve data 
+    dataset = TIFFSegmentationDataset(
+        img_dir=r"dataset\TIFF Images\TIFF Images",
+        mask_dir=r"dataset\ROI Masks\ROI Masks",
+        patch_size=1024)
+    
+    # Generate a DataLoader object for test
+    test_dataloader = DataLoader(
+        dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True
+    )
+
+    # Call simple inference
+    test(model, test_dataloader, device, path_model, needed = False)
 
 
 # FEATURE GENERATION --> Generate data for the application of the later CNN
 if args.mode=="features": 
-    model = UNet() if args.model == "unet" else AttentionUNet()
-    cnn_data = test(model, test_dataloader, device, path, needed = True)
 
-    # Store data -> if needed is True: that is we need data to feed the later CNN
+    # Retrieve data 
+    dataset = TIFFSegmentationDataset(
+        img_dir=r"dataset\TIFF Images\TIFF Images",
+        mask_dir=r"dataset\ROI Masks\ROI Masks",
+        patch_size=1024)
+    
+    # Generate a DataLoader object for test
+    test_dataloader = DataLoader(
+        dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True
+    )
+
+    cnn_data = test(model, test_dataloader, device, path_data, needed = True)
+
+    # Store data -> if needed is True: that is, we need data to feed the later CNN
+    # Check data storing path
+    General.ensure_dir(path_data)
+    # Serialize and store data
     General.serialize_data(cnn_data, path_data)
 
 

@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 
 
 
-def train(model:Union[UNet, AttentionUNet], dataloader:DataLoader, batch_size:int, epochs:int, device:str, path:str)->Union[UNet, AttentionUNet]:
+def train(model:Union[UNet, AttentionUNet], dataloader:DataLoader, epochs:int, device:str, path:str)->None:
     """ 
         Function aimed to train the given model 
         over a given dataset
@@ -17,13 +17,12 @@ def train(model:Union[UNet, AttentionUNet], dataloader:DataLoader, batch_size:in
         Params:
             model(Union[UNet, AttentionUnet]): The selected model
             dataloader(DataLoader): The object to sample batches from
-            batch_size(int): The input size per steps
             epochs(int): The number of epochs
             device(str): Define the device to use
             PATH(str): Model's storing path
 
         Returns:
-            model(Union[UNet, AttentionUnet]): The trained model 
+            None
     """
 
     # Define mode and loss

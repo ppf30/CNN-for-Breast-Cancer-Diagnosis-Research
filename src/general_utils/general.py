@@ -1,6 +1,5 @@
 import os
 import pickle
-import to
 from torch.utils.data import DataLoader
 
 class General():
@@ -21,7 +20,10 @@ class General():
                 None
         """
         if not os.path.exists(path):
+            print('hola')
             os.makedirs(path)
+        else:
+            print(f"The dir ({path}) exists")
 
     @staticmethod
     def serialize_data(data:object, path:str)->None:
@@ -36,27 +38,39 @@ class General():
                 None
 
         """
+
+        # Create full path
+        full_path = path + 'train_data'
+
         # Serialize using pickle
-        pickle.dump(obj = data, file = path)
+        with open(full_path, mode = 'wb') as file:
+            pickle.dump(data, file)
+        
 
 
     @staticmethod
-    def recover_data(path:str)->DataLoader:
+    def recover_data(path:str, name:str)->DataLoader:
         """ 
             Function aimed to recover serialized
             data
 
             Params:
                 path(str): The path where data is stored
+                name(str): The name of the specific file where it is
 
             Returns:
                 data(DataLoader): The data object 
         """
 
+        # Create the full path
+        full_path = path + name
+
         # Get data from path
         try:
-            data = pickle.load(file = path)
+            with open(full_path, mode = "rb") as file:
+                data = pickle.load(file)
             return data
+        
         except FileNotFoundError as e:
             print(f'Exception({e})')
 
