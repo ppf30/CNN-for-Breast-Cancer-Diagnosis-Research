@@ -2,6 +2,7 @@ import os
 import torch
 import tifffile as tif
 import random
+import torchvision.transforms.functional as TF
 
 class TIFFSegmentationDataset(torch.utils.data.Dataset):
     def __init__(self, img_dir, mask_dir, patch_size=1024):
@@ -62,6 +63,25 @@ class TIFFSegmentationDataset(torch.utils.data.Dataset):
 
         mask = torch.tensor(mask)
         mask = (mask > 0).float().unsqueeze(0)
+
+
+        # \\ Data Augmentation \\
+
+        # espejo horizontal (50% probabilidad)
+        if random.random() > 0.5:
+            image = TF.hflip(image)
+            mask = TF.hflip(mask)
+
+        # espejo vertical
+        if random.random() > 0.5:
+            image = TF.vflip(image)
+            mask = TF.vflip(mask)
+
+        # rotacion aleatoria
+        if random.randomo() > 0.5:
+            angle = random.uniform(-90, 90)
+            image = TF.rotate(image, angle)
+            mask = TF.rotate(mask, angle)
 
         return image, mask
     
