@@ -20,7 +20,6 @@ class General():
                 None
         """
         if not os.path.exists(path):
-            print('hola')
             os.makedirs(path)
         else:
             print(f"The dir ({path}) exists")

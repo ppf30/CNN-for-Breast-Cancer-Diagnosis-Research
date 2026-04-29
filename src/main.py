@@ -42,7 +42,7 @@ path_model = './models'
 path_data = './data_cnn/'
 
 # Define the model 
-model = UNet(in_channels = args.in_ch, out_channels = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, out_channels = args.out_cl )
+model = UNet(in_channels = args.in_ch, num_classes = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, num_classes = args.out_cl )
 
 
 
@@ -71,7 +71,7 @@ if args.mode == 'train':
 
 
     # Call training with the model
-    train(args.model, train_dataloader, args.epochs, device, path_model)
+    loss_values = train(model, train_dataloader, args.epochs, device, path_model)
 
 
 #TESTING PROCESS --> Evaluate a given model 
@@ -93,7 +93,9 @@ if args.mode=="test":
     )
 
     # Call simple inference
-    test(model, test_dataloader, device, path_model, needed = False)
+    prediction = test(model, test_dataloader, device, path_model, needed = False)
+
+    # Call metrics generation
 
 
 # FEATURE GENERATION --> Generate data for the application of the later CNN
@@ -114,12 +116,12 @@ if args.mode=="features":
         pin_memory=True
     )
 
-    cnn_data = test(model, test_dataloader, device, path_data, needed = True)
+    new_dataset = test(model, test_dataloader, device, path_data, needed = True)
 
     # Store data -> if needed is True: that is, we need data to feed the later CNN
     # Check data storing path
     General.ensure_dir(path_data)
     # Serialize and store data
-    General.serialize_data(cnn_data, path_data)
+    General.serialize_data(new_dataset, path_data)
 
 
