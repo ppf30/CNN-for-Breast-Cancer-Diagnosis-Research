@@ -5,15 +5,15 @@ from typing import Union
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from dataset import TIFFSegmentationDataset
 from general_utils import General
+from torch.utils.data import DataLoader
 
 # Files import
 from train import train
 from test import test
 from unet.models import UNet, AttentionUNet
 from dataloader import TIFFSegmentationDataset
-
-
 
 # Define the parser
 parser = argparse.ArgumentParser(description="Entrenamiento de UNet para segmentación")
@@ -48,13 +48,25 @@ test_dataloader = TIFFSegmentationDataset()
 
 #TRAINING PROCESS --> Train unet-> store the model
 if args.mode == 'train':
+    dataset = TIFFSegmentationDataset(
+        img_dir=r"dataset\TIFF Images\TIFF Images",
+        mask_dir=r"dataset\ROI Masks\ROI Masks",
+        patch_size=1024)
+    
+    dataloader = DataLoader(
+        dataset,
+        batch_size=4,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True
+    )
 
     # Check model's storing path
     General.ensure_dir(path)
     # Create the model
     model = UNet(in_channels = args.in_ch, out_channels = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, out_channels = args.out_cl )
     # Call training
-    train(args.model, train_dataloader, args.batch_size, args.epochs, device, path)
+    train(args.model, dataloader, args.batch_size, args.epochs, device, path)
 
 
 #TESTINGS PROCESS --> Evaluate a given model 

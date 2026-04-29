@@ -1,9 +1,7 @@
 import os
 import torch
 import tifffile as tif
-import numpy as np
 import random
-from torch.utils.data import DataLoader
 
 class TIFFSegmentationDataset(torch.utils.data.Dataset):
     def __init__(self, img_dir, mask_dir, patch_size=1024):
@@ -17,16 +15,17 @@ class TIFFSegmentationDataset(torch.utils.data.Dataset):
             if f.lower().endswith((".tif", ".tiff"))
         ])
 
-        # --- filtrar imágenes sin tumor ---
+        # filtrar imágenes sin tumor
         self.files = []
 
         for f in all_files:
             mask_path = os.path.join(mask_dir, f)
-            mask = tif.imread(mask_path)
 
-            # si la máscara está vacía → se descarta
-            if np.any(mask > 0):
-                self.files.append(f)
+            # si no existe la máscara → se descarta
+            if not os.path.exists(mask_path):
+                continue
+
+            self.files.append(f)
 
     def __len__(self):
         return len(self.files)
@@ -67,16 +66,3 @@ class TIFFSegmentationDataset(torch.utils.data.Dataset):
         return image, mask
     
 
-dataset = TIFFSegmentationDataset(
-    img_dir=img_dir,
-    mask_dir=mask_dir,
-    patch_size=1024
-)
-
-dataloader = DataLoader(
-    dataset,
-    batch_size=4,
-    shuffle=True,
-    num_workers=4,
-    pin_memory=True
-)
