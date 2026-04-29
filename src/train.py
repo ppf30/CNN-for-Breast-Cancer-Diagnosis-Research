@@ -1,6 +1,7 @@
 import sys
 import argparse
 from typing import Union
+import torch
 from unet.models import UNet, AttentionUNet
 import torch.nn as nn
 import torch.optim as optim
@@ -25,12 +26,10 @@ def train(model:Union[UNet, AttentionUNet], dataloader:DataLoader, batch_size:in
             model(Union[UNet, AttentionUnet]): The trained model 
     """
 
-
     # Define mode and loss
     model.train()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters())
-
 
     # Iterate over the different epochs
     for epoch in range(epochs):

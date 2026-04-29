@@ -5,14 +5,14 @@ from typing import Union
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from dataset import TIFFSegmentationDataset
 from general_utils import General
+from torch.utils.data import DataLoader
 
 # Files import
 from train import train
 from features import generate_outputs
 from unet.models import UNet, AttentionUNet
-
-
 
 # Define the parser
 parser = argparse.ArgumentParser(description="Entrenamiento de UNet para segmentación")
@@ -43,19 +43,31 @@ path = './models'
 
 #TRAINING PROCESS --> Train unet-> store the model -> get the data
 if args.mode == 'train':
+    dataset = TIFFSegmentationDataset(
+        img_dir=r"dataset\TIFF Images\TIFF Images",
+        mask_dir=r"dataset\ROI Masks\ROI Masks",
+        patch_size=1024)
+    
+    dataloader = DataLoader(
+        dataset,
+        batch_size=4,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True
+    )
 
     # Check model's storing path
     General.ensure_model_dir(path)
     # Create the model
     model = UNet(in_channels = args.in_ch, out_channels = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, out_channels = args.out_cl )
     # Call training
-    train(args.model, train_dataloader, args.batch_size, args.epochs, device, path)
+    train(args.model, dataloader, args.batch_size, args.epochs, device, path)
 
 
 # Train the CNN using the other dataset
 if args.mode=="features":
     model = UNet() if args.model =="unet" else AttentionUNet()
-    generate_outputs(model, train_dataloader, device, path)
+    generate_outputs(model, dataloader, device, path)
 
 
 # TESTING PROCESS
