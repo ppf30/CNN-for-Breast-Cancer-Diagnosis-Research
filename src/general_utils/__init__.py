@@ -1,2 +1,3 @@
 from .general import General
-__all__ = ["General"]
+from .metrics import Metrics
+__all__ = ["General", "Metrics"]

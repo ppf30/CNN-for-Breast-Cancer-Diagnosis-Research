@@ -3,14 +3,18 @@ from typing import Union
 import torch 
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
+from metrics import Metrics
 
 # Withing project imports
 from unet.models import UNet, AttentionUNet
-def test(model:Union[UNet], dataloader:DataLoader, device:str, path:str, needed:bool = False)->TensorDataset:
+
+def test(modelname:str, model:Union[UNet], dataloader:DataLoader, device:str, path:str, needed:bool = False)->dict[str, float]:
     """ 
-        Function aimed to provide testing over a given model 
+        Function aimed to provide testing over a given model
+        given model 
 
         Params:
+            modelname(str): The name of the model to load
             model(Union[UNet, AttentionUnet]): The given model 
             dataloader(DataLoader): The given dataset
             device(str): Define the device to use
@@ -19,12 +23,12 @@ def test(model:Union[UNet], dataloader:DataLoader, device:str, path:str, needed:
 
 
         Returns:
-            dataset(TensorDataset): The dataset of (data, label) pairs
+            metrics(dict[str, float]): The dictionary of metrics
     """
 
 
     # Load the model  -> build path adding name
-    model_path  = path + '/model.pth'
+    model_path  = path + f'/{modelname}.pth'
     model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
 
@@ -32,22 +36,38 @@ def test(model:Union[UNet], dataloader:DataLoader, device:str, path:str, needed:
     model.eval()
 
     # Define the storage structures
-    features = []
+    prediction_list = []
     labels_list = []
 
     # Generate the outputs
     with torch.no_grad():
         for data, labels in dataloader:
+
             data = data.to(device)
             # Get the output from the model 
-            output = model(data)
-            # Update the structures 
-            features.append(output.to(device = 'cpu'))
+            logits = model(data).to(device = 'cpu')
+            # Get the prediction [0,1]-->sigmoid(logit)
+            probability = torch.sigmoid(logits)
+            classification = (probability>0.5).float()
+
+            # Store the pair (output, labels)
+            prediction_list.append(classification)
             labels_list.append(labels)
 
-    # Concat the structures before returning
-    features = torch.cat(features)
-    labels_list = torch.cat(labels_list)
 
-    # Create the TrainDataset: indexable pair of (data, label)
-    return TensorDataset(features, labels_list) if needed else features
+    
+    # Create structure to feed the metrics class (total, ch, h, w)
+    predictions_tensor = torch.cat(prediction_list)
+    print(predictions_tensor.shape)
+    labels_tensor  = torch.cat(labels_list)
+
+    # Metrics management
+    metrics = Metrics(predictions_tensor, labels_tensor)
+
+    # Create the metrics
+    metrics.feed_metrics()
+
+    # Show info
+    print(metrics)
+
+    return metrics.metrics

@@ -28,6 +28,8 @@ class UNet(nn.Module):
         # Defining the output conv
         self.out_conv = nn.Conv2d(in_channels = 64, out_channels = num_classes, kernel_size = 1)
 
+       
+
     def forward(self, x:torch.Tensor):
 
         # Downsampling
@@ -47,5 +49,6 @@ class UNet(nn.Module):
 
         # Defining the outout
         out = self.out_conv(up_4)
+
 
         return out

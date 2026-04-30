@@ -37,9 +37,9 @@ CLASSES = args.out_cl
 EPOCHS = args.epochs
 device = 'cuda' if torch.cuda.is_available() else "cpu"
 
-# Paths to store models and generated data
+# Paths to store models 
 path_model = './models'
-path_data = './data_cnn/'
+
 
 # Define the model 
 model = UNet(in_channels = args.in_ch, num_classes = args.out_cl ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, num_classes = args.out_cl )
@@ -55,10 +55,20 @@ dataset = TIFFSegmentationDataset(
 train_size = int(0.8 * len(dataset))
 test_size = len(dataset) - train_size
 
+# Define the splits and store them only once
+path_data = './data'
 train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
+General.serialize_data(train_dataset, path_data,  name = 'train.pkl')
+General.serialize_data(test_dataset, path_data, name = 'test.pkl')
+
+
+
 
 #TRAINING PROCESS --> Train unet-> store the model
 if args.mode == 'train':
+
+    # Retrieve train object
+    train_dataset = General.recover_data(path_data, name = 'train')
 
     # Generate a DataLoader object for train
     train_dataloader = DataLoader(
@@ -73,11 +83,16 @@ if args.mode == 'train':
     General.ensure_dir(path_model)
 
     # Call training with the model
-    loss_values = train(model, train_dataloader, args.epochs, device, path_model, name='Unet')
+    modelname = args.model
+    loss_values = train(modelname, model, train_dataloader, args.epochs, device, path_model, name='Unet')
 
 
 #TESTING PROCESS --> Evaluate a given model 
 if args.mode=="test":
+
+
+    # Retrieve test object
+    test_dataset = General.recover_data(path_data, name = 'test')
 
     # Generate a DataLoader object for test
     test_dataloader = DataLoader(
@@ -88,9 +103,9 @@ if args.mode=="test":
         pin_memory=True
     )
 
-    # Call simple inference
-    prediction = test(model, test_dataloader, device, path_model, needed = False)
+    # Define the modelname to retrieve
+    model_name = args.model
 
-    # Call metrics generation
- 
+    # Call simple inference
+    metrics_dict = test(modelname, model, test_dataloader, device, path_model)
 

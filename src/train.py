@@ -5,12 +5,14 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-def train( model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str, name:str)->list[float]:
+
+def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str)->list[float]:
     """ 
         Function aimed to train the given model 
         over a given dataset
 
         Params:
+            modelname(str): The name of the model
             model(Union[UNet, AttentionUnet]): The selected model
             dataloader(DataLoader): The object to sample batches from
             epochs(int): The number of epochs
@@ -74,7 +76,7 @@ def train( model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, pat
 
     
     # Save the trained model
-    torch.save(model.state_dict(),path+"/model.pth")  
+    torch.save(model.state_dict(), f'{path}/{modelname}.pth')  
 
     # Return
     return loss_storage
