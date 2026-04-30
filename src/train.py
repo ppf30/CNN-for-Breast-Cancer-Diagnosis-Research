@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-def train(model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str)->list[float]:
+def train( model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str, name:str)->list[float]:
     """ 
         Function aimed to train the given model 
         over a given dataset
@@ -24,7 +24,7 @@ def train(model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path
     # Define mode and loss
     model.to(device)
     model.train()
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.BCEWithLogitsLoss()  #TODO: IMPLEMENTAR WEIGHTS
     optimizer = optim.Adam(model.parameters())
     loss_storage = {}
 

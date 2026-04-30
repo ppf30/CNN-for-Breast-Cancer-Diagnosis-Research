@@ -8,8 +8,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from unet.models import UNet, AttentionUNet
 def test(model:Union[UNet], dataloader:DataLoader, device:str, path:str, needed:bool = False)->TensorDataset:
     """ 
-        Function aimed to provide testing over a given model
-        given model 
+        Function aimed to provide testing over a given model 
 
         Params:
             model(Union[UNet, AttentionUnet]): The given model 
