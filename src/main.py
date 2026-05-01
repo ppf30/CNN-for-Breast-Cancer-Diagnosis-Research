@@ -82,9 +82,12 @@ if args.mode == 'train':
     # Check model's storing path
     General.ensure_dir(path_model)
 
+    # Compute metametrics for weighting
+    weight = General.metametrics(train_dataloader)
+
     # Call training with the model
     modelname = args.model
-    loss_values = train(modelname, model, train_dataloader, args.epochs, device, path_model, name='Unet')
+    loss_values = train(modelname, model, train_dataloader, args.epochs, device, path_model, weight)
 
 
 #TESTING PROCESS --> Evaluate a given model 

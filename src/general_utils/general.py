@@ -1,7 +1,7 @@
 import os
 import pickle
 from torch.utils.data import DataLoader
-
+import torch
 class General():
 
     def __init__():
@@ -105,6 +105,28 @@ class General():
             print(f'Exception({e})')
 
         
+
+    @staticmethod
+    def metametrics(dataloader:DataLoader)->float:
+        """     
+            Function aimed to compute class 
+            one's weight
+        """
+
+        # Define structures
+        zeros = 0
+        ones = 0
+
+        # Iterate dl
+        uno = 0
+        for _, masks in dataloader:
+            zeros+=(masks.shape[0]*masks.shape[3]**2)
+            ones+=torch.sum(masks, dim = (0, 2,3)).item()
+
+        # Obtain weight ones/zeros *x =  1 --> x = 1/(ones/zeros)
+        return 1/(uno/zeros)
+
+
 
 
 

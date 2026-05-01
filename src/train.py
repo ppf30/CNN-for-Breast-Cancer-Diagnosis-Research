@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 
-def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str)->list[float]:
+def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str, weight:float])->list[float]:
     """ 
         Function aimed to train the given model 
         over a given dataset
@@ -18,6 +18,7 @@ def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, d
             epochs(int): The number of epochs
             device(str): Define the device to use
             PATH(str): Model's storing path
+            weight(float): The positive class weight
 
         Returns:
             loss(list[float]): The loss evolution
@@ -26,7 +27,8 @@ def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, d
     # Define mode and loss
     model.to(device)
     model.train()
-    criterion = nn.BCEWithLogitsLoss()  #TODO: IMPLEMENTAR WEIGHTS
+    weigth_tensor = torch.tensor(weight).to(device)
+    criterion = nn.BCEWithLogitsLoss(pos_weight = weigth_tensor)  
     optimizer = optim.Adam(model.parameters())
     loss_storage = {}
 
