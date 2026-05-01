@@ -118,13 +118,13 @@ class General():
         ones = 0
 
         # Iterate dl
-        uno = 0
         for _, masks in dataloader:
-            zeros+=(masks.shape[0]*masks.shape[3]**2)
-            ones+=torch.sum(masks, dim = (0, 2,3)).item()
+            total+=masks.numel()
+            ones+=torch.sum(masks).item()
 
         # Obtain weight ones/zeros *x =  1 --> x = 1/(ones/zeros)
-        return 1/(uno/zeros)
+        zeros = total - ones
+        return 1/(ones/zeros)
 
 
 

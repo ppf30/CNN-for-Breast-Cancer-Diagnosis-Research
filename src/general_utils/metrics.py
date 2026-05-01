@@ -13,7 +13,7 @@ class Metrics():
     def metrics(self):
         return self._metrics.copy()
 
-    def __getitem__(self, key:int)->float:
+    def __getitem__(self, key:str)->float:
         try:
             metric = self._metrics[key]
             return metric
@@ -50,13 +50,13 @@ class Metrics():
 
         """
         # Calculate each part
-        intersection = torch.sum((self.x*self.y), dim = (2,3))
+        intersection = torch.sum((self.x*self.y), dim = (1, 2,3))
     
-        denominator = torch.sum(self.x, dim = (2,3)) + torch.sum(self.y, dim = (2,3))
+        denominator = torch.sum(self.x, dim = (1, 2,3)) + torch.sum(self.y, dim = (1, 2,3))
         # Compute dice
         dice = 2*intersection/(denominator + 1e-08)
 
-        # Update metrics dictionary -> sample's mean
+        # Update metrics dictionary -> sample's mean (B, )--> single float
         self._metrics['dice'] = dice.mean()
         
 

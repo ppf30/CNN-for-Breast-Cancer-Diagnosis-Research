@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 
-def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str, weight:float])->list[float]:
+def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, device:str, path:str, weight:float)->list[float]:
     """ 
         Function aimed to train the given model 
         over a given dataset
