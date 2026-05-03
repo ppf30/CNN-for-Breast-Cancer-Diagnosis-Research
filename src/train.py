@@ -32,6 +32,13 @@ def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, d
     optimizer = optim.Adam(model.parameters())
     loss_storage = {}
 
+    # early stopping
+    patience = 20
+    trigger_times = 0
+    best_loss = float("inf")
+    best_model_path = f'{path}/{modelname}_best.pth'
+    last_model_path = f'{path}/{modelname}_last.pth'
+
     # Iterate over the different epochs
     for epoch in range(epochs):
         epoch_loss = 0
@@ -69,16 +76,26 @@ def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, d
             if (i+1)%10 == 0:
                 avg_loss = batch_loss/10
                 print(f"·Batch({i+1}):loss({avg_loss})")
-                # batch_loss = 0
+                batch_loss = 0
 
         # Store average loss
         avg_loss = epoch_loss/len(dataloader)
         loss_storage[epoch] = avg_loss
         print()
 
+        # early stopping logic
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            trigger_times = 0
+            torch.save(model.state_dict(), best_model_path)
+        else:
+            trigger_times += 1
+            if trigger_times >= patience:
+                break
+
     
     # Save the trained model
-    torch.save(model.state_dict(), f'{path}/{modelname}.pth')  
+    torch.save(model.state_dict(), last_model_path)  
 
     # Return
     return loss_storage
