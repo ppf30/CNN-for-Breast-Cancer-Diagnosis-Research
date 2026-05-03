@@ -83,7 +83,7 @@ def train(modelname:str, model:Union[UNet], dataloader:DataLoader, epochs:int, d
         loss_storage[epoch] = avg_loss
         print()
 
-        # early stopping logic
+        # Early stopping logic
         if avg_loss < best_loss:
             best_loss = avg_loss
             trigger_times = 0

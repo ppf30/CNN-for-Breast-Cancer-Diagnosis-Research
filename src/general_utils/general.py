@@ -112,10 +112,10 @@ class General():
             Function aimed to compute class 
             one's weight
         """
-
         # Define structures
         zeros = 0
         ones = 0
+        total = 0
 
         # Iterate dl
         for _, masks in dataloader:

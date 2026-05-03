@@ -3,7 +3,7 @@ from typing import Union
 import torch 
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
-from metrics import Metrics
+from general_utils import Metrics
 
 # Withing project imports
 from unet.models import UNet, AttentionUNet
