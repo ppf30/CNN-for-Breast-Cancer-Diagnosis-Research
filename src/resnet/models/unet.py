@@ -1,10 +1,11 @@
-from unet.utils import DownSample, UpSampleAttention
+from  resnet.utils import DownSample, UpSample
 import torch
 import torch.nn as nn
 
-class AttentionUNet(nn.Module):
+
+class UNet(nn.Module):
     """ 
-        Implementation of AttentionUNet general architecture
+        Implementation of UNet general architecture
     """
     def __init__(self, in_channels:int, num_classes:int):
         super().__init__()
@@ -19,10 +20,10 @@ class AttentionUNet(nn.Module):
         self.bottleneck =  DownSample(512, 1024)
 
         # Define the upsampling part
-        self.up_convolution_1 = UpSampleAttention(1024, 512, 512)
-        self.up_convolution_2 = UpSampleAttention(512, 256, 256)
-        self.up_convolution_3 = UpSampleAttention(256, 128,  128)
-        self.up_convolution_4 = UpSampleAttention(128, 64,  64)
+        self.up_convolution_1 = UpSample(1024, 512)
+        self.up_convolution_2 = UpSample(512, 256)
+        self.up_convolution_3 = UpSample(256, 128)
+        self.up_convolution_4 = UpSample(128, 64)
 
         # Defining the output conv
         self.out_conv = nn.Conv2d(in_channels = 64, out_channels = num_classes, kernel_size = 1)
@@ -36,7 +37,7 @@ class AttentionUNet(nn.Module):
         conv_out_4, down_4 = self.down_convolution_4(down_3)
 
         # The bottleneck
-        b, _ = self.bottleneck(down_4)
+        b,_ = self.bottleneck(down_4)
 
         #Upsampling
         up_1  = self.up_convolution_1(b, conv_out_4)
