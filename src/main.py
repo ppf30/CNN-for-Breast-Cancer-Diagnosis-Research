@@ -11,11 +11,15 @@ from dataset.dataset import MammographyROIDataset
 from models.resnet import ResNet18Embedding
 from utils.extract_embeddings import extract_embeddings
 import numpy as np
+from dataset.generate_roi_dataset import generate_roi_dataset
+import os
+
 
 def train_model(model, train_loader, val_loader,
                 epochs=50, lr=1e-4, device="cuda",
                 save_path="best_resnet18_embedding.pth"):
-
+    
+    "Entrena ResNet y lo devuelve para utilizarlo en inferencia y extraer embeddings"
     model = model.to(device)
 
     all_train_labels = [int(Path(f).stem[-1]) for f in train_loader.dataset.files]
@@ -77,8 +81,12 @@ if __name__ == "__main__":
     EPOCHS     = 50
     LR         = 1e-4
     DEVICE     = "cuda" if torch.cuda.is_available() else "cpu"
-
+    
     print(f"Usando: {DEVICE}")
+
+    if not os.path.exists(IMAGES_DIR):
+        print("Generando ROI datset...")
+        generate_roi_dataset()
 
     train_files, val_files, test_files = make_splits(IMAGES_DIR)
 
