@@ -81,6 +81,7 @@ if __name__ == "__main__":
     EPOCHS     = 50
     LR         = 1e-4
     DEVICE     = "cuda" if torch.cuda.is_available() else "cpu"
+    EMBEDDING_DIM = 64
     
     print(f"Usando: {DEVICE}")
 
@@ -102,7 +103,7 @@ if __name__ == "__main__":
                               shuffle=False, num_workers=4, pin_memory=True)
 
     # Entrenar
-    resnet = ResNet18Embedding(embedding_dim=64, unfreeze_since="layer4")
+    resnet = ResNet18Embedding(embedding_dim=EMBEDDING_DIM, unfreeze_since="layer4")
     model_trained = train_model(resnet, train_loader, val_loader,
                         epochs=EPOCHS, lr=LR, device=DEVICE)
     
