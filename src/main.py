@@ -7,11 +7,11 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import torch.nn.functional as F
 import torch
 from sklearn.metrics import roc_auc_score
-from dataset.dataset import MammographyROIDataset
+from data.dataset import MammographyROIDataset
 from models.resnet import ResNet18Embedding
 from utils.extract_embeddings import extract_embeddings
 import numpy as np
-from dataset.generate_roi_dataset import generate_roi_dataset
+from data.generate_roi_dataset import generate_roi_dataset
 import os
 
 
