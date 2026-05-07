@@ -1,4 +1,4 @@
-from utils.make_splits import make_splits
+from utils.splits import splits_masks, splits_tiff
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from pathlib import Path
@@ -76,7 +76,8 @@ def train_model(model, train_loader, val_loader,
 
 if __name__ == "__main__":
 
-    IMAGES_DIR = "../../dataset/classification"
+    IMAGES_DIR_MASKS = "../../dataset/ROI Masks"
+    IMAGES_DIR_TIFF = '../../dataset/TIFF Images'
     BATCH_SIZE = 32
     EPOCHS     = 50
     LR         = 1e-4
@@ -85,11 +86,12 @@ if __name__ == "__main__":
     
     print(f"Usando: {DEVICE}")
 
-    if not os.path.exists(IMAGES_DIR):
+    if not os.path.exists(IMAGES_DIR_MASKS):
         print("Generando ROI datset...")
         generate_roi_dataset()
 
-    train_files, val_files, test_files = make_splits(IMAGES_DIR)
+    train_files, val_files, test_files = splits_masks(IMAGES_DIR_MASKS)
+    splits_tiff(IMAGES_DIR_TIFF, train_files, val_files, test_files)
 
     train_dataset = MammographyROIDataset(train_files)
     val_dataset   = MammographyROIDataset(val_files)
