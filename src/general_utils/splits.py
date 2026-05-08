@@ -37,27 +37,33 @@ def splits_masks(images_dir: str, val_size: float = 0.15, test_size: float = 0.1
     val_dir = os.path.join(split_dir, "val")
     test_dir = os.path.join(split_dir, "test")
 
-    os.makedirs(train_dir, exist_ok=True)
-    os.makedirs(val_dir, exist_ok=True)
-    os.makedirs(test_dir, exist_ok=True)
+    try:
+        os.makedirs(train_dir)
+        os.makedirs(val_dir)
+        os.makedirs(test_dir)
 
-    # Copy files to the respective folders
-    for file in train:
-        src = os.path.join(images_dir, file)
-        dst = os.path.join(train_dir, file)
-        shutil.copy(src, dst)
+        # Copy files to the respective folders
+        for file in train:
+            src = os.path.join(images_dir, file)
+            dst = os.path.join(train_dir, file)
+            shutil.copy(src, dst)
 
-    for file in val:
-        src = os.path.join(images_dir, file)
-        dst = os.path.join(val_dir, file)
-        shutil.copy(src, dst)
+        for file in val:
+            src = os.path.join(images_dir, file)
+            dst = os.path.join(val_dir, file)
+            shutil.copy(src, dst)
 
-    for file in test:
-        src = os.path.join(images_dir, file)
-        dst = os.path.join(test_dir, file)
-        shutil.copy(src, dst)
+        for file in test:
+            src = os.path.join(images_dir, file)
+            dst = os.path.join(test_dir, file)
+            shutil.copy(src, dst)
 
-    return train, val, test
+    except FileExistsError:
+        return train, val, test, True
+
+    else:
+        return train, val, test, False
+
 
 
 def splits_tiff(base_dir:str, images_dir:str,  train:list, val:list, test:list):
@@ -83,6 +89,7 @@ def splits_tiff(base_dir:str, images_dir:str,  train:list, val:list, test:list):
     os.makedirs(val_dir, exist_ok=True)
     os.makedirs(test_dir, exist_ok=True)
 
+    
     # Copy files to the respective folders
     for file in train:
         src = os.path.join(images_dir, file)

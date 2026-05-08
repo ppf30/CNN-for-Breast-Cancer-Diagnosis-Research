@@ -57,13 +57,14 @@ IMAGES_DIR_TIFF = os.path.join(BASE_DATA, 'TIFF Images')
 
 # Get splits by name
 path_masks = './data/masks'
-train_ids,val_ids,test_ids= splits_masks(IMAGES_DIR_MASKS)
+train_ids,val_ids,test_ids, already_there = splits_masks(IMAGES_DIR_MASKS)
 General.serialize_data(train_ids, path_masks,  name = 'train_ids.pkl')
 General.serialize_data(val_ids, path_masks, name = 'val_ids.pkl')
 General.serialize_data(test_ids, path_masks, name = 'test_ids.pkl')
 
 # Align names and  folders
-splits_tiff(BASE_DATA, IMAGES_DIR_TIFF, train_ids, val_ids, test_ids)
+if not already_there:
+    splits_tiff(BASE_DATA, IMAGES_DIR_TIFF, train_ids, val_ids, test_ids)
 
 
 # Create the different datasets
@@ -105,6 +106,7 @@ if MODE == 'train':
         num_workers=4,
         pin_memory=True
     )
+
     # Retrieve val object
     val_dataset = General.recover_data(path_data, name = 'val')
 
@@ -130,26 +132,6 @@ if MODE == 'train':
 
 
 
-
-
-
-#TESTING PROCESS --> Evaluate a given model 
-if MODE=="test":
-
-    # Retrieve test object
-    test_dataset = General.recover_data(path_data, name = 'test')
-
-    # Generate a DataLoader object for test
-    test_dataloader = DataLoader(
-        test_dataset,
-        batch_size=4,
-        num_workers=4,
-        shuffle=True,
-        pin_memory=True
-    )
-
-    # Call simple inference
-    metrics_dict = test(args.modelname, model, test_dataloader, device, path_model, sample = False)
 
 #TESTING PROCESS --> Evaluate a given model 
 if MODE=="test":
@@ -183,13 +165,14 @@ if MODE=="emb":
         test_dataset,
         batch_size=len(test_dataset),
         num_workers=4,
-        shuffle=True,
+        shuffle=False,
         pin_memory=True
     )
 
     # Call simple inference
-    embeddings_val = embeddings(args.modelname, model, test_dataloader, device, path_model)
+    print(indices)
 
+    embeddings_val = embeddings(args.modelname, model, test_dataloader, device, path_model)
     # Serialize the embedding together with the indices
     path_emb = './data/emb'
     General.serialize_data((indices, embeddings_val), path_emb, name = 'emb.pkl')
