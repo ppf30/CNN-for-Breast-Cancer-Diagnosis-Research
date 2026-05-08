@@ -9,7 +9,7 @@ import random
 # Withing project imports
 from unet.models import UNet, AttentionUNet
 
-def test(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataLoader, device:str, path:str, sample:bool)->tuple[dict, torch.Tensor]:
+def test(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataLoader, device:str, path:str, sample:bool)->dict:
     """ 
         Function aimed to provide testing over a given model
         given model 
@@ -24,9 +24,7 @@ def test(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataLoader,
 
 
         Returns:
-            A tuple of:
-                - metrics(dict[str, float]): The dictionary of metrics
-                - embedding_tensor(torch.Tensor): The tensor containing the embeddings
+            metrics(dict[str, float]): The dictionary of metrics
     """
 
 
@@ -63,7 +61,7 @@ def test(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataLoader,
             labels_list.append(labels.cpu())
 
             # Store the embedding
-            embedding_list.append(model.embedding_storage.detach().cpu())
+            #embedding_list.append(model.embedding_storage.detach().cpu())
 
             # Generate random image from selected batch
             if idx in batch_idx:
@@ -81,7 +79,7 @@ def test(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataLoader,
     # Create structure to feed the metrics class (total, ch, h, w)
     predictions_tensor = torch.cat(prediction_list)
     labels_tensor  = torch.cat(labels_list)
-    embeddings_tensor = torch.cat(embedding_list)
+    #embeddings_tensor = torch.cat(embedding_list)
 
     # Metrics management
     metrics = Metrics(predictions_tensor, labels_tensor)
@@ -92,4 +90,4 @@ def test(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataLoader,
     # Show info
     print(metrics)
 
-    return metrics.metrics, embeddings_tensor
+    return metrics.metrics

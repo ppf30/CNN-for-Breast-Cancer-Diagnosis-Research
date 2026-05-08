@@ -41,7 +41,7 @@ class UNet(nn.Module):
         conv_out_4, down_4 = self.down_convolution_4(down_3)
 
         # The bottleneck
-        b,_ = self.bottleneck(down_4)
+        b, _ = self.bottleneck(down_4)
 
         #Upsampling
         up_1  = self.up_convolution_1(b, conv_out_4)
@@ -49,11 +49,47 @@ class UNet(nn.Module):
         up_3  = self.up_convolution_3(up_2, conv_out_2)
         up_4  = self.up_convolution_4(up_3, conv_out_1)
 
-        # Defining the output
+        # Defining the outout
         out = self.out_conv(up_4)
 
-        # Mean per map and keep the channels
+        # Mean per map and keep the channels -->[batch, 64]
         embedding = torch.mean(up_4, dim = [2,3])
         self.embedding_storage = embedding.detach()
 
         return out
+
+
+
+    def embeddings(self, x:torch.Tensor)->torch.Tensor:
+        """  
+            Function aimed to extract the embeddings
+            from a given net model
+
+            Params:
+                x(torch.Tensor): The input Tensor size (batch, ch, h, w)
+
+            Returns:
+                embeddings(torch.Tensor): The embeddings Tensor
+        
+        """
+
+        # Downsampling
+        conv_out_1, down_1 = self.down_convolution_1(x)
+        conv_out_2, down_2 = self.down_convolution_2(down_1)
+        conv_out_3, down_3 = self.down_convolution_3(down_2)
+        conv_out_4, down_4 = self.down_convolution_4(down_3)
+
+        # The bottleneck
+        b, _ = self.bottleneck(down_4)
+
+        #Upsampling
+        up_1  = self.up_convolution_1(b, conv_out_4)
+        up_2  = self.up_convolution_2(up_1, conv_out_3)
+        up_3  = self.up_convolution_3(up_2, conv_out_2)
+        up_4  = self.up_convolution_4(up_3, conv_out_1)
+
+        #Get the embedding:mean per map and keep the channels -->[batch, 64]
+        embeddings = torch.mean(up_4, dim = [2,3])
+        return embeddings
+        
+    
