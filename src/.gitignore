@@ -7,4 +7,4 @@ images/
 gt_masked/
 loss/
 test_visz/
-*.ipynb
+*ipynb
