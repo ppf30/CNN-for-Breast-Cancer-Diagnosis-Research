@@ -1,4 +1,5 @@
 import torch
+import matplotlib.pyplot as plt
 
 class Metrics():
 
@@ -58,5 +59,4 @@ class Metrics():
 
         # Update metrics dictionary -> sample's mean (B, )--> single float
         self._metrics['dice'] = dice.mean()
-        
-
+    

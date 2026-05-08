@@ -7,6 +7,7 @@ class UNet(nn.Module):
     """ 
         Implementation of UNet general architecture
     """
+
     def __init__(self, in_channels:int, num_classes:int):
         super().__init__()
 
@@ -15,6 +16,7 @@ class UNet(nn.Module):
         self.down_convolution_2 = DownSample(64, 128)
         self.down_convolution_3 = DownSample(128, 256)
         self.down_convolution_4 = DownSample(256, 512)
+        self.embedding_storage = None
 
         # Define the bottleneck
         self.bottleneck =  DownSample(512, 1024)
@@ -47,8 +49,11 @@ class UNet(nn.Module):
         up_3  = self.up_convolution_3(up_2, conv_out_2)
         up_4  = self.up_convolution_4(up_3, conv_out_1)
 
-        # Defining the outout
+        # Defining the output
         out = self.out_conv(up_4)
 
+        # Mean per map and keep the channels
+        embedding = torch.mean(up_4, dim = [2,3])
+        self.embedding_storage = embedding.detach()
 
         return out

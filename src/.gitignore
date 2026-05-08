@@ -1,3 +1,8 @@
 
 # Ignore notebook files
-*.ipynb
+data/
+models/
+overlap/
+images/
+gt_masked/
+loss/

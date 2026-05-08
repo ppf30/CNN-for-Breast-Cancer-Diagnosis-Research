@@ -19,24 +19,23 @@ parser = argparse.ArgumentParser(description="Entrenamiento de UNet para segment
 
 # Add arguments to the parser
 parser.add_argument("--batch_size", type=int, default=64, help = "Batch Size")
-parser.add_argument("--lr", type=float, default=0.001, help = "Learning Rate")
 parser.add_argument("--in_ch",type=int, default=1, help='Input Channels')
 parser.add_argument("--out_ch", type=int, default=1, help = "Output Classes")
 parser.add_argument("--model", type=str, default="unet", choices = ["unet", "aunet"], help = "Model Selection")
 parser.add_argument("--epochs", type=int, default=100, help = "Training Epochs")
-parser.add_argument("--mode", type=str, choices = ["train", "features", "test"], help = "Mode Selection")
+parser.add_argument("--mode", type=str, choices = ["train", "test"], help = "Mode Selection")
+parser.add_argument("--modelname", type=str, help = "The name to store the model")
 
 # Parse args from Command Line Input
 args = parser.parse_args()
 
-print('holaaaa:', args)
-
 # Define constant params
 BATCH_SIZE = args.batch_size
-LEARNING_RATE = args.lr
 IN_CHANNELS = args.in_ch
 CLASSES = args.out_ch
 EPOCHS = args.epochs
+MODEL = args.model
+MODE = args.mode
 device = 'cuda' if torch.cuda.is_available() else "cpu"
 
 # Paths to store models 
@@ -44,16 +43,16 @@ path_model = './models'
 
 
 # Define the model 
-model = UNet(in_channels = args.in_ch, num_classes = args.out_ch ) if args.model =="unet" else AttentionUNet(in_channels = args.in_ch, num_classes = args.out_cl )
+model = UNet(in_channels = IN_CHANNELS, num_classes = CLASSES ) if MODEL =="unet" else AttentionUNet(in_channels = IN_CHANNELS, num_classes = CLASSES )
 model = model.to(device)
 
 # Retrieve data 
 dataset = TIFFSegmentationDataset(
     img_dir=r"./dataset/TIFF Images",
     mask_dir=r"./dataset/ROI Masks",
-    patch_size=1024)
+    )
 
-# Define train and test split sizes
+# Define train and test split sizes--> parte de ph
 train_size = int(0.8 * len(dataset))
 test_size = len(dataset) - train_size
 
@@ -65,36 +64,60 @@ General.serialize_data(test_dataset, path_data, name = 'test.pkl')
 
 
 
+# Retrieve train object
+path_data = './data'
+train_dataset = General.recover_data(path_data, name = 'train')
+
+
+
+
+
+
 
 #TRAINING PROCESS --> Train unet-> store the model
-if args.mode == 'train':
+if MODE == 'train':
 
     # Retrieve train object
     train_dataset = General.recover_data(path_data, name = 'train')
 
-    # Generate a DataLoader object for train
+   # Generate a DataLoader object for train
     train_dataloader = DataLoader(
         train_dataset,
-        batch_size=args.batch_size,
+        batch_size=4,
         shuffle=True,
         num_workers=4,
         pin_memory=True
     )
+    # Retrieve val object
+    val_dataset = General.recover_data(path_data, name = 'val')
+
+    # Generate a DataLoader object for train
+    val_dataloader = DataLoader(
+        train_dataset,
+        batch_size=4,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True
+)
 
     # Check model's storing path
     General.ensure_dir(path_model)
 
     # Compute metametrics for weighting
-    weight = General.metametrics(train_dataloader)
+    weight = 9
 
     # Call training with the model
-    modelname = args.model
-    loss_values = train(modelname, model, train_dataloader, args.epochs, device, path_model, weight)
+    plot = True
+    modelname = f'{MODEL}_{EPOCHS}'
+    loss_values = train(modelname, val_dataloader, model, train_dataloader, EPOCHS, device, path_model, weight, plot)
+
+
+
+
 
 
 #TESTING PROCESS --> Evaluate a given model 
-if args.mode=="test":
-
+if MODE=="test":
 
     # Retrieve test object
     test_dataset = General.recover_data(path_data, name = 'test')
@@ -102,15 +125,12 @@ if args.mode=="test":
     # Generate a DataLoader object for test
     test_dataloader = DataLoader(
         test_dataset,
-        batch_size=args.batch_size,
+        batch_size=4,
         num_workers=4,
-        shuffle=False,
+        shuffle=True,
         pin_memory=True
     )
 
-    # Define the modelname to retrieve
-    model_name = args.model
-
     # Call simple inference
-    metrics_dict = test(modelname, model, test_dataloader, device, path_model)
-
+    metrics_dict, embedding = test(args.modelname, model, test_dataloader, device, path_model, sample = False)
+    print(embedding)
