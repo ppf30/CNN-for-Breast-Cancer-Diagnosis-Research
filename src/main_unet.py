@@ -58,9 +58,10 @@ IMAGES_DIR_TIFF = os.path.join(BASE_DATA, 'TIFF Images')
 # Get splits by name
 path_masks = './data/masks'
 train_ids,val_ids,test_ids, already_there = splits_masks(IMAGES_DIR_MASKS)
-General.serialize_data(train_ids, path_masks,  name = 'train_ids.pkl')
-General.serialize_data(val_ids, path_masks, name = 'val_ids.pkl')
-General.serialize_data(test_ids, path_masks, name = 'test_ids.pkl')
+General.serialize_data(General.create_id(train_ids), path_masks,  name = 'train_ids.pkl')
+General.serialize_data(General.create_id(val_ids), path_masks, name = 'val_ids.pkl')
+General.serialize_data(General.create_id(test_ids), path_masks, name = 'test_ids.pkl')
+
 
 # Align names and  folders
 if not already_there:
@@ -170,10 +171,9 @@ if MODE=="emb":
     )
 
     # Call simple inference
-    print(indices)
-
     embeddings_val = embeddings(args.modelname, model, test_dataloader, device, path_model)
-    # Serialize the embedding together with the indices
+    # Serialize the embeddings together with the indices
+
     path_emb = './data/emb'
     General.serialize_data((indices, embeddings_val), path_emb, name = 'emb.pkl')
 

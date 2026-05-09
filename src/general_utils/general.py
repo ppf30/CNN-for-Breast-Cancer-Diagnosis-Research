@@ -5,7 +5,7 @@ import torch
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 import numpy as np
-
+import re
 class General():
 
     def __init__():
@@ -108,7 +108,35 @@ class General():
         except FileNotFoundError as e:
             print(f'Exception({e})')
 
-        
+    
+    @staticmethod
+    def create_id(str_list:list[str])->list[int]:
+        """     
+            Function aimed to create a list of 
+            int from a list of str values
+
+            Params:
+                str_list(list[str]): The list of str vals
+            
+            Returns:
+                res_list(list[int]): The list of integer values        
+        """
+
+        # Remove the extension
+        clean_list = [name.split('.')[0] for name in str_list]
+        # Look for the start of the sequence
+        res_list = []
+        for number in clean_list:
+            # Get the integer and append
+            match = re.search("[0-9]", number)
+            if match:
+                index = match.start()
+                res_list.append(int(number[index:]))
+            else:
+                print(f'No matching found in ({number})')
+        return res_list
+
+
 
     @staticmethod
     def metametrics(dataloader:DataLoader)->float:

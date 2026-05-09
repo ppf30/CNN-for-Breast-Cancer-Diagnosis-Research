@@ -40,6 +40,6 @@ def embeddings(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataL
         for idx, (data, labels) in enumerate(dataloader):
             data = data.to(device)
             embeddings = model.embeddings(data)
-
-    return embeddings
+        
+    return embeddings.to(device = 'cpu')
 
