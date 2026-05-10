@@ -24,7 +24,7 @@ class MammographyROIDataset(Dataset):
         img = Image.open(path)  #abrimos con PIL porque transforms espera una Image, no un numpy array
         img = self.transform_base(img)
 
-        return img, label
+        return img, label, path
 
 train_dir = 'dataset/isolated_tumors/train'
 
@@ -34,4 +34,5 @@ train_files = [
 ]
 dataset = MammographyROIDataset(files=train_files)
 
-print(dataset.__getitem__(0))
+
+

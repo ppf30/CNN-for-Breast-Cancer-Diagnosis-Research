@@ -29,19 +29,18 @@ def extract_embeddings(model, dataloader, device="cuda", mode='mean'):
     groups = defaultdict(list)
     label_groups = defaultdict(list)
 
-    with torch.no_grad():
-        for imgs, labels, paths in dataloader:
-            imgs = imgs.to(device)
-            emb  = model.get_embeddings(imgs)  # [batch, D]
+    for imgs, labels, paths in dataloader:
+        imgs = imgs.to(device)
+        emb  = model.get_embeddings(imgs)  # [batch, D]
 
-            emb = emb.cpu().numpy()
-            labels = labels.cpu().numpy()
+        emb = emb.cpu().numpy()
+        labels = labels.cpu().numpy()
 
-            for i, path in enumerate(paths):
-                img_id = Path(path).stem.split('_')[0]
+        for i, path in enumerate(paths):
+            img_id = Path(path).stem.split('_')[0][3:]
 
-                groups[img_id].append(emb[i])
-                label_groups[img_id].append(labels[i])
+            groups[img_id].append(emb[i])
+            label_groups[img_id].append(labels[i])
 
     agg_embeddings = []
     agg_ids = [] #para trazabilidad
@@ -62,7 +61,7 @@ def extract_embeddings(model, dataloader, device="cuda", mode='mean'):
         agg_embeddings.append(agg)
         agg_ids.append(img_id)
 
-    embeddings = np.array(agg_embeddings)
+    embeddings = torch.Tensor(agg_embeddings)
     ids  = np.array(agg_ids)
 
     print(f"Embeddings por imagen: {embeddings.shape}")

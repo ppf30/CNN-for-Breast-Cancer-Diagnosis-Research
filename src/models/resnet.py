@@ -40,10 +40,10 @@ class ResNet18Embedding(nn.Module):
         self.embedding = nn.Sequential(
             nn.Flatten(),               # Results: [batch, 512]
             nn.Linear(512, 256),
+            nn.BatchNorm1d(256),                 # estabiliza entrenamiento con LR alto
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Linear(256, embedding_dim),  # Results: [batch, 64]
-            nn.ReLU()
         )
 
         self.classifier = nn.Sequential(

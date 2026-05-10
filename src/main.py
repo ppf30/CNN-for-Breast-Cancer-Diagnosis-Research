@@ -13,7 +13,7 @@ from utils.extract_embeddings import extract_embeddings
 import numpy as np
 from data.generate_roi_dataset import generate_roi_dataset
 import os
-
+import pickle
 
 def train_model(model, train_loader, val_loader,
                 epochs=50, lr=1e-4, device="cuda",
@@ -123,3 +123,9 @@ if __name__ == "__main__":
     np.save("embeddings.npy", embeddings)
     np.save("embeddings_ids.npy", ids)
     print("Embeddings guardados en embeddings.npy y embedding_ids.npy")
+
+        # Guardar tupla (ids, embeddings) en pickle:
+    with open("test_embeddings.pkl", "wb") as f:
+        pickle.dump((ids, embeddings), f)
+
+    print(f"Guardado: {len(ids)} imágenes, embeddings shape: {embeddings.shape}")
