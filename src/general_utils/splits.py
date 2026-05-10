@@ -19,7 +19,7 @@ def splits_masks(images_dir: str, val_size: float = 0.15, test_size: float = 0.1
     """
 
     files = os.listdir(images_dir)
-    img_ids = np.array([f for f in files])
+    img_ids = np.sort(np.array([f for f in files]))
 
 
     lim_train = int(len(img_ids) * (1 - val_size - test_size))

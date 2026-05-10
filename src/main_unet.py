@@ -58,6 +58,10 @@ IMAGES_DIR_TIFF = os.path.join(BASE_DATA, 'TIFF Images')
 # Get splits by name
 path_masks = './data/masks'
 train_ids,val_ids,test_ids, already_there = splits_masks(IMAGES_DIR_MASKS)
+print(min(train_ids), max(train_ids))
+print(min(val_ids), max(val_ids))
+print(min(test_ids), max(test_ids))
+
 General.serialize_data(General.create_id(train_ids), path_masks,  name = 'train_ids.pkl')
 General.serialize_data(General.create_id(val_ids), path_masks, name = 'val_ids.pkl')
 General.serialize_data(General.create_id(test_ids), path_masks, name = 'test_ids.pkl')
