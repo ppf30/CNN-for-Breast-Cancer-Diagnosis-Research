@@ -1,6 +1,6 @@
 
 # Ignore notebook files
-
+test_og/
 models/
 overlap/
 images/

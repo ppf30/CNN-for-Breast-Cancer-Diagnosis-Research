@@ -174,6 +174,7 @@ if MODE=="emb":
         pin_memory=True
     )
 
+ 
     # Call simple inference
     embeddings_val = embeddings(args.modelname, model, test_dataloader, device, path_model)
     # Serialize the embeddings together with the indices
