@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
-
+import os
 
 class MammographyROIDataset(Dataset):
     def __init__(self, files: list):
@@ -24,4 +24,14 @@ class MammographyROIDataset(Dataset):
         img = Image.open(path)  #abrimos con PIL porque transforms espera una Image, no un numpy array
         img = self.transform_base(img)
 
-        return img, label, path
+        return img, label
+
+train_dir = 'dataset/isolated_tumors/train'
+
+train_files = [
+    os.path.join(train_dir, file)
+    for file in os.listdir(train_dir)
+]
+dataset = MammographyROIDataset(files=train_files)
+
+print(dataset.__getitem__(0))

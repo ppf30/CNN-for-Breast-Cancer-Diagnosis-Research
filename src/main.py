@@ -76,7 +76,6 @@ def train_model(model, train_loader, val_loader,
 
 if __name__ == "__main__":
 
-    IMAGES_DIR = "../../dataset/classification"
     BATCH_SIZE = 32
     EPOCHS     = 50
     LR         = 1e-4
@@ -85,12 +84,22 @@ if __name__ == "__main__":
     
     print(f"Usando: {DEVICE}")
 
-    if not os.path.exists(IMAGES_DIR):
-        print("Generando ROI datset...")
-        generate_roi_dataset()
-
-    train_files, val_files, test_files = make_splits(IMAGES_DIR)
-
+    train_dir = 'dataset/isolated_tumors/train'
+    train_files = [
+        os.path.join(train_dir, file)
+        for file in os.listdir(train_dir)
+    ]
+    val_dir = 'dataset/isolated_tumors/val'
+    val_files = [
+        os.path.join(val_dir, file)
+        for file in os.listdir(val_dir)
+    ]
+    test_dir = 'dataset/isolated_tumors/val'
+    test_files = [
+        os.path.join(test_dir, file)
+        for file in os.listdir(test_dir)
+    ]
+    
     train_dataset = MammographyROIDataset(train_files)
     val_dataset   = MammographyROIDataset(val_files)
     test_dataset  = MammographyROIDataset(test_files)
