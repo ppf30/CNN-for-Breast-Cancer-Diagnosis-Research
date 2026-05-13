@@ -23,7 +23,7 @@ def train_model(model, train_loader, val_loader,
     n_ben = all_train_labels.count(0)
     n_mal = all_train_labels.count(1)
     class_weights = torch.tensor([1.0, n_ben / n_mal]).to(device)
-    print(f"Class weights → benigno: 1.0 | maligno: {n_ben/n_mal:.2f}")
+    print(f"Class weights -> benigno: 1.0 | maligno: {n_ben/n_mal:.2f}")
 
     criterion = nn.CrossEntropyLoss(weight=class_weights)
     optimizer = AdamW(filter(lambda p: p.requires_grad, model.parameters()),
@@ -31,11 +31,11 @@ def train_model(model, train_loader, val_loader,
     scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-6)
 
     best_auc   = 0.0
-    history    = {"train_loss": [], "val_auc": []}   # ← historial para plots
+    history    = {"train_loss": [], "val_auc": []}   
 
     for epoch in range(epochs):
 
-        # ── Train ──────────────────────────────────────────────────────────
+        # Train
         model.train()
         train_loss = 0.0
         for imgs, labels, _ in train_loader:
@@ -48,7 +48,7 @@ def train_model(model, train_loader, val_loader,
 
         avg_loss = train_loss / len(train_loader)
 
-        # ── Validación ─────────────────────────────────────────────────────
+        # Val
         model.eval()
         all_probs, all_labels_val = [], []
         with torch.no_grad():
@@ -71,8 +71,8 @@ def train_model(model, train_loader, val_loader,
             best_auc = auc
             torch.save(model.state_dict(), save_path)
 
-    # ── Cargar los mejores pesos antes de devolver ──────────────────────────
+    # Cargar los mejores pesos
     model.load_state_dict(torch.load(save_path, map_location=device))
     print(f"Modelo cargado con mejor AUC: {best_auc:.4f}")
 
-    return model, history   # ← devuelve también el historial
+    return model, history   

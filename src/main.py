@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     train_dir  = "dataset/isolated_tumors/train"
     val_dir    = "dataset/isolated_tumors/val"
-    test_dir   = "dataset/isolated_tumors/test"   # ← corregido (antes apuntaba a val)
+    test_dir   = "dataset/isolated_tumors/test"   
 
     def load_files(directory):
         return [os.path.join(directory, f) for f in os.listdir(directory)]
@@ -45,21 +45,21 @@ if __name__ == "__main__":
     test_loader  = DataLoader(test_dataset,  batch_size=BATCH_SIZE,
                               shuffle=False, num_workers=4, pin_memory=True)
 
-    # ── Entrenar ────────────────────────────────────────────────────────────
+    # Entrenar
     resnet = ResNet18Embedding(embedding_dim=EMBEDDING_DIM, unfreeze_since="layer4")
     model_trained, history = train_model(
         resnet, train_loader, val_loader,
         epochs=EPOCHS, lr=LR, device=DEVICE,
     )
 
-    # ── Guardar historial para visualización ────────────────────────────────
+    # Guardamos historial para la vis
     with open("training_history.pkl", "wb") as f:
         pickle.dump(history, f)
 
-    # ── Extraer y guardar embeddings del test set ───────────────────────────
-    embeddings, ids = extract_embeddings(model_trained, test_loader, device=DEVICE)
+    # Extraer y guardar los embedding
+    embeddings, ids = extract_embeddings(model_trained, train_loader, device=DEVICE)
 
-    with open("test_embeddings.pkl", "wb") as f:
+    with open("train_embeddings.pkl", "wb") as f:
         pickle.dump((ids, embeddings), f)
 
     print(f"Guardado: {len(ids)} imágenes | embeddings shape: {embeddings.shape}")
