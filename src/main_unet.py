@@ -28,6 +28,7 @@ parser.add_argument("--model", type=str, default="unet", choices = ["unet", "aun
 parser.add_argument("--epochs", type=int, default=100, help = "Training Epochs")
 parser.add_argument("--mode", type=str, choices = ["train", "test", "emb"], help = "Mode Selection")
 parser.add_argument("--modelname", type=str, help = "The name to store the model")
+parser.add_argument("--data", type=str, default="normal", choices = ["normal", "aug"], help = "The type of train choice")
 
 # Parse args from Command Line Input
 args = parser.parse_args()
@@ -58,10 +59,8 @@ IMAGES_DIR_TIFF = os.path.join(BASE_DATA, 'TIFF Images')
 # Get splits by name
 path_masks = './data/masks'
 train_ids,val_ids,test_ids, already_there = splits_masks(IMAGES_DIR_MASKS)
-print(min(train_ids), max(train_ids))
-print(min(val_ids), max(val_ids))
-print(min(test_ids), max(test_ids))
 
+# Store the ids
 General.serialize_data(General.create_id(train_ids), path_masks,  name = 'train_ids.pkl')
 General.serialize_data(General.create_id(val_ids), path_masks, name = 'val_ids.pkl')
 General.serialize_data(General.create_id(test_ids), path_masks, name = 'test_ids.pkl')
@@ -78,15 +77,24 @@ train_dataset = TIFFSegmentationDataset(
     mask_dir=r"./dataset/split_masks/train",
     )
 
+
+
 val_dataset = TIFFSegmentationDataset(
     img_dir=r"./dataset/split_tiff/val",
     mask_dir=r"./dataset/split_masks/val",
     )
 
-
 test_dataset = TIFFSegmentationDataset(
     img_dir=r"./dataset/split_tiff/test",
     mask_dir=r"./dataset/split_masks/test",
+    )
+
+
+# Operates distinctly
+train_augmentated = TIFFSegmentationDataset(
+    img_dir=r"./dataset/split_tiff/train",
+    mask_dir=r"./dataset/split_masks/train",
+    augmentate = True
     )
 
 # Define the splits and store them only once
@@ -94,6 +102,8 @@ path_data = './data/splits'
 General.serialize_data(train_dataset, path_data,  name = 'train.pkl')
 General.serialize_data(test_dataset, path_data, name = 'test.pkl')
 General.serialize_data(val_dataset, path_data, name = 'val.pkl')
+General.serialize_data(train_augmentated, path_data,  name = 'train_aug.pkl')
+
 
 
 
@@ -101,7 +111,7 @@ General.serialize_data(val_dataset, path_data, name = 'val.pkl')
 if MODE == 'train':
 
     # Retrieve train object
-    train_dataset = General.recover_data(path_data, name = 'train')
+    train_dataset = General.recover_data(path_data, name = 'train' if args.data=='normal' else "train_aug")
 
    # Generate a DataLoader object for train
     train_dataloader = DataLoader(
@@ -117,7 +127,7 @@ if MODE == 'train':
 
     # Generate a DataLoader object for train
     val_dataloader = DataLoader(
-        train_dataset,
+        val_dataset,
         batch_size=4,
         shuffle=True,
         num_workers=4,

@@ -10,12 +10,13 @@ from torchvision.transforms import v2
 
 class TIFFSegmentationDataset(torch.utils.data.Dataset):
     
-    def __init__(self, img_dir, mask_dir, patch_size=1024):
+    def __init__(self, img_dir, mask_dir, augmentate:bool = False):
 
         self.img_dir = img_dir
         self.mask_dir = mask_dir
-        # Patch size is not really used 
-        self.patch_size = patch_size
+        # Define if augmentation is seeked
+        self.augmentate = augmentate
+        # Define resize
         self.resize = v2.Resize((256, 256))
 
         all_files = sorted([
@@ -61,5 +62,23 @@ class TIFFSegmentationDataset(torch.utils.data.Dataset):
         
         # Turn masks into binary files
         mask_res = (mask_res > 0.5).float()
+
+
+        if self.augmentate:
+            # Horizontal flip: 
+            if random.random() < 0.5:
+                image_res = TF.hflip(image_res)
+                mask_res = TF.hflip(mask_res)
+
+            # Vertical flip
+            if random.random() < 0.5:
+                image_res = TF.vflip(image_res)
+                mask_res = TF.vflip(mask_res)
+
+            # Random Rotation
+            if random.random() > 0.5:
+                angle = random.uniform(-15, 15)
+                image_res = TF.rotate(image_res, angle)
+                mask_res = TF.rotate(mask_res, angle)
 
         return image_res, mask_res
