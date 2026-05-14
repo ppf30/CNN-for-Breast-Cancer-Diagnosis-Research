@@ -32,14 +32,28 @@ def embeddings(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataL
     model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
     model.eval()
+    all_embeddings = []
+
 
 
     # Generate the embeddings from a trained model
     with torch.no_grad():
+       for data, _ in dataloader:
+
+        data = data.to(device)
+
+        batch_embeddings = model.embeddings(data)
+
+        all_embeddings.append(batch_embeddings.cpu())
+
+    embeddings = torch.cat(all_embeddings, dim=0)
         # Input a single batch
+    '''
         for idx, (data, labels) in enumerate(dataloader):
             data = data.to(device)
             embeddings = model.embeddings(data)
+
+        '''
         
     return embeddings.to(device = 'cpu')
 

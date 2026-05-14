@@ -143,7 +143,7 @@ if MODE == 'train':
     # Call training with the model
     plot = True
     modelname = f'{MODEL}_{EPOCHS}'
-    loss_values = train(modelname, val_dataloader, model, train_dataloader, EPOCHS, device, path_model, weight, plot)
+    loss_values = train(args.modelname, val_dataloader, model, train_dataloader, EPOCHS, device, path_model, weight, plot)
 
 
 
@@ -171,20 +171,19 @@ if MODE=="test":
 if MODE=="emb":
 
     # Retrieve the test dataset
-    test_dataset = General.recover_data(path_data, name = 'test')
+    test_dataset = General.recover_data(path_data, name = 'val')
 
     # Retrieve the indices
-    indices = General.recover_data(path_masks, name = 'test_ids')
+    indices = General.recover_data(path_masks, name = 'val_ids')
     # Generate a DataLoader object for test
     test_dataloader = DataLoader(
         test_dataset,
-        batch_size=len(test_dataset),
-        num_workers=4,
-        shuffle=False,
-        pin_memory=True
+        batch_size = 2,
+        num_workers = 0,
+        shuffle = False,
+        pin_memory = False
     )
 
- 
     # Call simple inference
     embeddings_val = embeddings(args.modelname, model, test_dataloader, device, path_model)
     # Serialize the embeddings together with the indices
