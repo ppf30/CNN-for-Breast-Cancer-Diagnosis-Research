@@ -45,21 +45,25 @@ if __name__ == "__main__":
     test_loader  = DataLoader(test_dataset,  batch_size=BATCH_SIZE,
                               shuffle=False, num_workers=4, pin_memory=True)
 
-    # Entrenar
-    resnet = ResNet18Embedding(embedding_dim=EMBEDDING_DIM, unfreeze_since="layer4")
-    model_trained, history = train_model(
-        resnet, train_loader, val_loader,
-        epochs=EPOCHS, lr=LR, device=DEVICE,
-    )
+    # # Entrenar
+    # resnet = ResNet18Embedding(embedding_dim=EMBEDDING_DIM, unfreeze_since="layer4")
+    # model_trained, history = train_model(
+    #     resnet, train_loader, val_loader,
+    #     epochs=EPOCHS, lr=LR, device=DEVICE,
+    # )
 
-    # Guardamos historial para la vis
-    with open("training_history.pkl", "wb") as f:
-        pickle.dump(history, f)
+    # # Guardamos historial para la vis
+    # with open("val_history.pkl", "wb") as f:
+    #     pickle.dump(history, f)
+
+    model_trained = ResNet18Embedding(embedding_dim=EMBEDDING_DIM)
+    model_trained.load_state_dict(torch.load("best_resnet18_embedding.pth", map_location=DEVICE))  # Cargar pesos entrenados
+    model_trained.eval()
 
     # Extraer y guardar los embedding
-    embeddings, ids = extract_embeddings(model_trained, train_loader, device=DEVICE)
+    embeddings, ids = extract_embeddings(model_trained, val_loader, device=DEVICE)
 
-    with open("train_embeddings.pkl", "wb") as f:
+    with open("val_embeddings.pkl", "wb") as f:
         pickle.dump((ids, embeddings), f)
 
     print(f"Guardado: {len(ids)} imágenes | embeddings shape: {embeddings.shape}")
