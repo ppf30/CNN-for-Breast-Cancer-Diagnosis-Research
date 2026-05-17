@@ -34,9 +34,9 @@ if __name__ == "__main__":
     def load_files(directory):
         return [os.path.join(directory, f) for f in os.listdir(directory)]
 
-    train_dataset = MammographyROIDataset(load_files(train_dir))
-    val_dataset   = MammographyROIDataset(load_files(val_dir))
-    test_dataset  = MammographyROIDataset(load_files(test_dir))
+    train_dataset = MammographyROIDataset(load_files(train_dir), augment=True)
+    val_dataset   = MammographyROIDataset(load_files(val_dir), augment=False)
+    test_dataset  = MammographyROIDataset(load_files(test_dir), augment=False)
 
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE,
                               shuffle=True,  num_workers=4, pin_memory=True)
@@ -46,15 +46,15 @@ if __name__ == "__main__":
                               shuffle=False, num_workers=4, pin_memory=True)
 
     # # Entrenar
-    # resnet = ResNet18Embedding(embedding_dim=EMBEDDING_DIM, unfreeze_since="layer4")
-    # model_trained, history = train_model(
-    #     resnet, train_loader, val_loader,
-    #     epochs=EPOCHS, lr=LR, device=DEVICE,
-    # )
+    resnet = ResNet18Embedding(embedding_dim=EMBEDDING_DIM, unfreeze_since="layer4")
+    model_trained, history = train_model(
+        resnet, train_loader, val_loader,
+        epochs=EPOCHS, lr=LR, device=DEVICE,
+    )
 
     # # Guardamos historial para la vis
-    # with open("val_history.pkl", "wb") as f:
-    #     pickle.dump(history, f)
+    with open("val_history.pkl", "wb") as f:
+        pickle.dump(history, f)
 
     model_trained = ResNet18Embedding(embedding_dim=EMBEDDING_DIM)
     model_trained.load_state_dict(torch.load("best_resnet18_embedding.pth", map_location=DEVICE))  # Cargar pesos entrenados

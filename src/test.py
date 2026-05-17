@@ -23,7 +23,6 @@ def evaluate(trained_model, test_loader: list, device: str = "cuda"):
         for imgs, labels, _ in test_loader:
             imgs   = imgs.to(device)
             logits = trained_model(imgs)
-            model.get_embeddings(imgs)
             probs  = F.softmax(logits, dim=1)[:, 1].cpu().numpy()
             preds  = logits.argmax(dim=1).cpu().numpy()
             all_probs.extend(probs)
