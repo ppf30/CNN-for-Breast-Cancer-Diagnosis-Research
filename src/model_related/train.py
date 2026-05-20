@@ -35,7 +35,9 @@ def combined_loss(output:torch.Tensor, labels:torch.Tensor, bce_criterion, alpha
     dice_loss = 1 - (2. * intersection + smooth) / (
         probs.sum(dim=(1,2,3)) + labels.sum(dim=(1,2,3)) + smooth)
     return alpha * bce + (1-alpha) * dice_loss.mean()
-def train(modelname:str, val_loader, model:Union[UNet, AttentionUNet], dataloader:DataLoader, epochs:int, device:str, path:str, weight:float, plot:bool)->list[float]:
+
+
+def train(modelname:str, model:Union[UNet, AttentionUNet], val_loader:DataLoader, dataloader:DataLoader, epochs:int, device:str, path:str, weight:float, plot:bool)->list[tuple[float]]:
     """ 
         Function aimed to train the given model 
         over a given dataset
@@ -43,6 +45,7 @@ def train(modelname:str, val_loader, model:Union[UNet, AttentionUNet], dataloade
         Params:
             modelname(str): The name of the model
             model(Union[UNet, AttentionUnet]): The selected model
+            val_loader(DataLoader): The object to sample batches from during validation
             dataloader(DataLoader): The object to sample batches from
             epochs(int): The number of epochs
             device(str): Define the device to use
@@ -51,7 +54,7 @@ def train(modelname:str, val_loader, model:Union[UNet, AttentionUNet], dataloade
             plot(bool): If a plot is seeked or not
 
         Returns:
-            loss(list[float]): The loss evolution (train, val)
+            loss(list[tuple[float]]): The loss evolution (train, val)
     """
 
     # Define base loss and schedule
@@ -144,7 +147,7 @@ def train(modelname:str, val_loader, model:Union[UNet, AttentionUNet], dataloade
         if avg_val_loss < best_val:
             best_val = avg_val_loss
             torch.save(model.state_dict(), f'{path}/{modelname}.pth')
-        
+
         # Handle train loss behaviour
         avg_loss = epoch_loss/len(dataloader)
         loss_storage[epoch] = (avg_loss, avg_val_loss)
@@ -166,7 +169,8 @@ def train(modelname:str, val_loader, model:Union[UNet, AttentionUNet], dataloade
         if plot:
             title = f"Epochs({epochs})|No loss schedule|"
             General.plotting_module(loss_storage, title, modelname)
-    except:
+    except Exception as e:
+        print('The error:', e)
         pass
 
     return loss_storage

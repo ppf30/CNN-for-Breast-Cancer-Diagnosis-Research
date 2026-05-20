@@ -1,10 +1,7 @@
 
 # Ignore notebook files
-test_og/
 models/
-overlap/
-images/
-gt_masked/
-loss/
-test_visz
 *ipynb
+notebooks/
+dataset/
+visualizations/test_visz_og/

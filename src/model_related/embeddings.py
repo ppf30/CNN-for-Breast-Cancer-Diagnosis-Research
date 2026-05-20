@@ -14,18 +14,16 @@ def embeddings(modelname:str, model:Union[UNet, AttentionUNet], dataloader:DataL
         Function aimed get the embeddings from a given model
 
         Params:
-            modelname(str): The name of the model to load
+            modelname(str): The name of the stored model to load
             model(Union[UNet, AttentionUnet]): The given model 
             dataloader(DataLoader): The given dataset
             device(str): Define the device to use
             path(str): The path to load the model from
 
-
         Returns:
-            embeddings(torch.Tensor): The embeddings tensor
+            embeddings(torch.Tensor): The embeddings tensor (samples, 64)
            
     """
-
 
     # Load the model  -> build path adding name
     model_path  = path + f'/{modelname}.pth'

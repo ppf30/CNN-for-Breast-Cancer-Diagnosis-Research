@@ -5,7 +5,8 @@ import torch.nn as nn
 
 class UpSampleAttention(nn.Module):
     """  
-        Implementing upsampling block
+        Implementing upsampling block 
+        including attention gate
     
     """
     def __init__(self, in_channels, skip_channels, out_channels):

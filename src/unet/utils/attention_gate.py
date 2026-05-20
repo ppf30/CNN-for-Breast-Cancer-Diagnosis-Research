@@ -2,6 +2,11 @@ import torch.nn as nn
 import torch
 
 class AttentionGate(nn.Module):
+    """  
+        Class aimed to implementate the attention 
+        gate for the U-Net base model 
+        
+    """
     def __init__(self, gate_channels, skip_channels, out_channels):
         super().__init__()
         self.conv_gate = nn.Sequential(

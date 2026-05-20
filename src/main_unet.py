@@ -143,7 +143,7 @@ if MODE == 'train':
     # Call training with the model
     plot = True
     modelname = f'{MODEL}_{EPOCHS}'
-    loss_values = train(args.modelname, val_dataloader, model, train_dataloader, EPOCHS, device, path_model, weight, plot)
+    loss_values = train(args.modelname, model, val_dataloader,train_dataloader, EPOCHS, device, path_model, weight, plot)
 
 
 
@@ -171,10 +171,10 @@ if MODE=="test":
 if MODE=="emb":
 
     # Retrieve the test dataset
-    test_dataset = General.recover_data(path_data, name = 'val')
+    test_dataset = General.recover_data(path_data, name = 'train')
 
     # Retrieve the indices
-    indices = General.recover_data(path_masks, name = 'val_ids')
+    indices = General.recover_data(path_masks, name = 'train_ids')
     # Generate a DataLoader object for test
     test_dataloader = DataLoader(
         test_dataset,

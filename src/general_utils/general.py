@@ -7,12 +7,16 @@ from matplotlib.patches import Patch
 import numpy as np
 import re
 class General():
+    """  
+        Class aimed to store useful functions
+
+    """
 
     def __init__():
         pass
 
     @staticmethod
-    def ensure_dir(path: str)->None:
+    def ensure_dir(path: str)->bool:
         """
             Function aimed to check path's 
             existance
@@ -90,7 +94,7 @@ class General():
                 name(str): The name of the specific file where data is
 
             Returns:
-                data(DataLoader): The data object 
+                data(DataLoader): The dataloader object 
         """
         # Check extension
         if len(name.split('.'))==1:
@@ -143,6 +147,11 @@ class General():
         """     
             Function aimed to compute class 
             one's weight
+
+            Params:
+                dataloader(DataLoader): The dataloader object
+            Returns:
+                val(float): The weighting value
         """
         # Define structures
         zeros = 0
@@ -161,7 +170,7 @@ class General():
 
         
     @staticmethod
-    def plotting_module(loss_values:dict[str, tuple[float]],title:str, name:str)->None:
+    def plotting_module(loss_values:dict[str, tuple[float]], title:str, name:str)->None:
         """     
             Function aimed to visualize train and validation
             loss per epoch. 
@@ -178,6 +187,7 @@ class General():
         fig, axes = plt.subplots(1,2, figsize = (10,5))
 
         # Get the values
+        keys = list(loss_values.keys())
         train_loss, val_loss = list(zip(*loss_values.values()))
         
         # Set main tile
@@ -188,13 +198,13 @@ class General():
         axes[0].set_xlabel('Epoch', color = 'red')
         axes[0].set_ylabel("Cumulative loss", color = 'red')
 
-        # Define the second plot
+        # Define the second plot        
         axes[1].set_title('Validation loss evolution', fontweight = 'bold')
         axes[1].plot(val_loss)
-        axes[1].set_xticks(ticks = loss_values.keys())
+        axes[1].set_xticks(ticks = range(len(keys)), labels = keys)
 
         # Save the image 
-        base_path = './loss'
+        base_path = './visualizations/loss_curves'
         os.makedirs(base_path, exist_ok = True)
         plt.savefig(f'{base_path}/{name}.png', dpi = 600)
 
@@ -244,5 +254,5 @@ class General():
         
         # Save the figure
         os.makedirs('./test_visz', exist_ok = True)
-        plt.savefig(f'./test_visz/{name}.png')
+        plt.savefig(f'./visualizations/test_visualizations/{name}.png')
         plt.close()
