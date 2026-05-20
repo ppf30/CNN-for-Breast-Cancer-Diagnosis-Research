@@ -29,17 +29,18 @@
 ## 🗂️ Estructura del repositorio
 
 ```
-├── models/
-│   ├── unet.py
-│   └── attention_unet.py
-├── training/
+├── unet/
+|    models/
+│         ├── unet.py
+│         └── attention_unet.py
+├── model_related/
 │   ├── train.py
-│   └── evaluate.py
-├── embeddings/
-│   └── generate_embeddings.py
-├── visualization/
-│   └── plots.py
-└── README.md
+│   └── embddings.py
+|   └── test.py
+├── visualizations/
+│   └── test_visualizations
+|   └── loss_curves
+|   └── gt_masked
 ```
 
 ---
