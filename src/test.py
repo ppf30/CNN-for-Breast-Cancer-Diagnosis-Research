@@ -46,28 +46,57 @@ def evaluate(trained_model, test_loader: list, device: str = "cuda"):
     # ── Plots ─────────────────────────────────
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-    # 1. Matriz de confusión
-    cm = confusion_matrix(all_labels, all_preds)
-    disp = ConfusionMatrixDisplay(cm, display_labels=["Benigno", "Maligno"])
-    disp.plot(ax=axes[0], colorbar=False, cmap="Blues")
-    axes[0].set_title("Matriz de Confusión")
+    # 2. Curva ROC (LO PONEMOS PRIMERO PARA SACAR EL UMBRAL)
+    fpr, tpr, thresholds = roc_curve(all_labels, all_probs)
+    
+    # Buscar el umbral óptimo para un Recall >= 0.90
+    target_recall = 0.90
+    
+    # Como los thresholds vienen ordenados de mayor a menor, 
+    # buscamos el primer índice donde el TPR supera 0.90
+    idx_optimo = np.where(tpr >= target_recall)[0][0] 
+    opt_thresh = thresholds[idx_optimo]
+    opt_fpr = fpr[idx_optimo]
+    opt_tpr = tpr[idx_optimo]
 
-    # 2. Curva ROC
-    fpr, tpr, _ = roc_curve(all_labels, all_probs)
-    axes[1].plot(fpr, tpr, color="steelblue", lw=2,
-                 label=f"AUC = {auc:.4f}")
+    all_preds = (all_probs >= opt_thresh).astype(int)
+
+    # Dibujar la curva
+    axes[1].plot(fpr, tpr, color="steelblue", lw=2, label=f"AUC = {auc:.4f}")
     axes[1].plot([0, 1], [0, 1], "k--", lw=1)
+    
+    # Dibujar el punto del umbral
+    axes[1].plot(opt_fpr, opt_tpr, marker='o', color='tomato', markersize=8, 
+                 label=f'Recall $\geq$ 0.9 (Thr: {opt_thresh:.3f})')
+    
+    # Añadir texto explicativo con una flecha apuntando al punto
+    axes[1].annotate(f'Umbral: {opt_thresh:.3f}\nFPR: {opt_fpr:.2f}', 
+                     xy=(opt_fpr, opt_tpr), 
+                     xytext=(opt_fpr + 0.1, opt_tpr - 0.15),
+                     arrowprops=dict(arrowstyle="->", color='black', lw=1.5),
+                     fontsize=10, bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", lw=1))
+
     axes[1].set_xlabel("False Positive Rate")
     axes[1].set_ylabel("True Positive Rate")
     axes[1].set_title("Curva ROC")
     axes[1].legend(loc="lower right")
+
+    # 1. Matriz de confusión (Ahora sí, dibujada)
+    cm = confusion_matrix(all_labels, all_preds)
+    disp = ConfusionMatrixDisplay(cm, display_labels=["Benigno", "Maligno"])
+    disp.plot(ax=axes[0], colorbar=False, cmap="Blues")
+    axes[0].set_title("Matriz de Confusión")
 
     # 3. Distribución de probabilidades predichas
     axes[2].hist(all_probs[all_labels == 0], bins=20, alpha=0.6,
                  color="steelblue", label="Benigno")
     axes[2].hist(all_probs[all_labels == 1], bins=20, alpha=0.6,
                  color="tomato", label="Maligno")
+    
+    # Dibujamos las líneas de los dos umbrales para comparar
     axes[2].axvline(0.5, color="black", linestyle="--", lw=1, label="Umbral 0.5")
+    axes[2].axvline(opt_thresh, color="tomato", linestyle="-", lw=2, label=f"Umbral {opt_thresh:.2f}")
+    
     axes[2].set_xlabel("Probabilidad predicha (maligno)")
     axes[2].set_ylabel("Frecuencia")
     axes[2].set_title("Distribución de predicciones")
