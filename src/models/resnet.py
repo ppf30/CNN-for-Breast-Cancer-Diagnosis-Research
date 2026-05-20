@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision.models as models
 
 class ResNet18Embedding(nn.Module):
-    def __init__(self, embedding_dim:int = 64, unfreeze_since:str = "layer4"):
+    def __init__(self, embedding_dim:int = 64, unfreeze_since:str = "fc"):
         """
         ResNet-18 based model for binary classification with an embedding head.
         This module dapts a pre-trained ResNEt18 nackbone to produce low-dimensional
@@ -20,17 +20,12 @@ class ResNet18Embedding(nn.Module):
         # Load pre-trained ResNet-18
         backbone = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 
-        # Freeze all parameters initially
-        for param in backbone.parameters():
-            param.requires_grad = False
-
         # Unfreeze parameters starting from the specified layer
-        unfreeze = False
         for name, param in backbone.named_parameters():
             if unfreeze_since in name:
-                unfreeze = True
-            if unfreeze:
                 param.requires_grad = True
+            else:
+                param.requires_grad = False
 
         # Remove the original classification head (fully connected layer)
         self.backbone = nn.Sequential(*list(backbone.children())[:-1])
@@ -77,3 +72,4 @@ class ResNet18Embedding(nn.Module):
             features = self.backbone(x)
             emb      = self.embedding(features)
         return emb  # [batch, 64]
+    
