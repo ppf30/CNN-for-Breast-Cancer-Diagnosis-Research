@@ -48,10 +48,10 @@
 │   └── general
 |   └── metrics
 |   └── splits
-├── data/
-│   └──  ├──emb
-|   └──  ├──masks
-|   └──  ├──splits
+└── data/
+    ├── emb/
+    ├── masks/
+    └── splits/
 
 
 
