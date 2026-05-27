@@ -41,6 +41,20 @@
 │   └── test_visualizations
 |   └── loss_curves
 |   └── gt_masked
+├── notebooks/
+│   └── attention_unet
+|   └── unet
+├── general_utils/
+│   └── general
+|   └── metrics
+|   └── splits
+├── data/
+│   └──  ├──emb
+|   └──  ├──masks
+|   └──  ├──splits
+
+
+
 ```
 
 ---
