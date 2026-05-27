@@ -1,7 +1,7 @@
 
 # Ignore notebook files
 models/
-*ipynb
-notebooks/
 dataset/
+model_related/test.ipynb
+.vscode
 visualizations/test_visz_og/
