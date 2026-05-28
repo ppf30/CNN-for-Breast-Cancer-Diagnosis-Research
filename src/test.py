@@ -13,8 +13,21 @@ from utils.extract_embeddings import extract_embeddings
 from utils.tsne import plot_tsne
 
 def evaluate(trained_model, test_loader: list, device: str = "cuda"):
+    """
+    Evalúa el modelo en el conjunto de test, calcula métricas y genera gráficos.
 
-    
+    Ajusta un umbral de decisión óptimo para garantizar un Recall >= 90% 
+    en la clase 'Maligno' y guarda los resultados visuales en un archivo.
+
+    Args:
+        trained_model: Modelo de PyTorch ya entrenado.
+        test_loader (list/DataLoader): Iterador con los datos de prueba (imgs, labels, _).
+        device (str): Dispositivo para la ejecución ("cuda" o "cpu"). Por defecto "cuda".
+
+    Returns:
+        tuple: (all_preds, all_probs, all_labels) como arreglos de NumPy, 
+               donde 'all_preds' utiliza el umbral optimizado.
+    """
     trained_model.eval()
 
     all_preds, all_probs, all_labels = [], [], []
@@ -33,7 +46,7 @@ def evaluate(trained_model, test_loader: list, device: str = "cuda"):
     all_preds  = np.array(all_preds)
     all_probs  = np.array(all_probs)
 
-    # ── Métricas ──────────────────────────────
+    # Métricas 
     auc = roc_auc_score(all_labels, all_probs)
 
     print("\n" + "═"*50)
@@ -43,7 +56,7 @@ def evaluate(trained_model, test_loader: list, device: str = "cuda"):
                                 target_names=["Benigno", "Maligno"],
                                 digits=4))
 
-    # ── Plots ─────────────────────────────────
+    # Plots 
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
     # 2. Curva ROC (LO PONEMOS PRIMERO PARA SACAR EL UMBRAL)
@@ -81,13 +94,13 @@ def evaluate(trained_model, test_loader: list, device: str = "cuda"):
     axes[1].set_title("Curva ROC")
     axes[1].legend(loc="lower right")
 
-    # 1. Matriz de confusión (Ahora sí, dibujada)
+    #  Matriz de confusión 
     cm = confusion_matrix(all_labels, all_preds)
     disp = ConfusionMatrixDisplay(cm, display_labels=["Benigno", "Maligno"])
     disp.plot(ax=axes[0], colorbar=False, cmap="Blues")
     axes[0].set_title("Matriz de Confusión")
 
-    # 3. Distribución de probabilidades predichas
+    # Distribución de probabilidades predichas
     axes[2].hist(all_probs[all_labels == 0], bins=20, alpha=0.6,
                  color="steelblue", label="Benigno")
     axes[2].hist(all_probs[all_labels == 1], bins=20, alpha=0.6,
