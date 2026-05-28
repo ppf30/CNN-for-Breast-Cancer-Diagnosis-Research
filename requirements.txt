@@ -1,5 +1,10 @@
+# Deep learning related
 torch==2.7.0
+torchvision==0.22.0
+
+# The classical ones
 numpy===2.2.5
-tifffile
-imagecodecs
-torchvision
+matplotlib==3.10.3
+
+# Data handling
+tifffile==2026.3.3
