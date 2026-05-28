@@ -1,4 +1,4 @@
-# 🧠 CNN for Breast Cancer Diagnosis
+# CNN for Breast Cancer Diagnosis
 
 > Pipeline de segmentación con variantes UNet para la detección del cáncer de mama.
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 🏗️ Variantes del modelo
+## Variantes del modelo
 
 | # | Modelo | Descripción |
 |---|--------|-------------|
@@ -17,16 +17,16 @@
 
 ---
 
-## 📦 Componentes
+## Componentes
 
-- 🔄 **Flujo de entrenamiento y test** — pipeline completo end-to-end
-- 🔢 **Generación de embeddings** — extracción de representaciones latentes
-- 🧩 **Implementación de modelos** — UNet clásico y Attention UNet
-- 📊 **Visualizaciones** — métricas, máscaras de segmentación y análisis
+-  **Flujo de entrenamiento y test** — pipeline completo end-to-end
+- **Generación de embeddings** — extracción de representaciones latentes
+- **Implementación de modelos** — UNet clásico y Attention UNet
+- **Visualizaciones** — métricas, máscaras de segmentación y análisis
 
 ---
 
-## 🗂️ Estructura del repositorio
+## Estructura del repositorio
 
 ```
 ├── unet/
@@ -59,7 +59,7 @@
 
 ---
 
-## ⚙️ Instalación
+##  Instalación
 
 ```bash
 git clone https://github.com/tu-usuario/CNN-for-Breast-Cancer-Diagnosis-Research.git
@@ -69,7 +69,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Uso rápido
+##  Uso rápido
 
 ```bash
 # Entrenamiento
