@@ -16,7 +16,6 @@ class UNet(nn.Module):
         self.down_convolution_2 = DownSample(64, 128)
         self.down_convolution_3 = DownSample(128, 256)
         self.down_convolution_4 = DownSample(256, 512)
-        self.embedding_storage = None
 
         # Define the bottleneck
         self.bottleneck =  DownSample(512, 1024)
@@ -51,10 +50,6 @@ class UNet(nn.Module):
 
         # Defining the outout
         out = self.out_conv(up_4)
-
-        # Mean per map and keep the channels -->[batch, 64]
-        embedding = torch.mean(up_4, dim = [2,3])
-        self.embedding_storage = embedding.detach()
 
         return out
 
