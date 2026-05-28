@@ -6,7 +6,7 @@ def extract_roi(image: np.ndarray, x: int, y: int, radius: int, scale: float = 1
 
     H, W = image.shape[:2]
 
-    # Window size — padding más generoso (scale por defecto subido a 2.0)
+    # Window size 
     half = int(radius * scale)
 
     x1, y1 = x - half, y - half

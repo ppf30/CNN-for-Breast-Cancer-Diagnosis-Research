@@ -25,7 +25,6 @@ class MammographyROIDataset(Dataset):
                 transforms.RandomHorizontalFlip(p=0.5),
                 transforms.RandomVerticalFlip(p=0.5),
                 transforms.RandomRotation(degrees=45), # Los tumores no tienen "arriba o abajo"
-                transforms.ColorJitter(brightness=0.2, contrast=0.2), # Inmunidad a luz
                 transforms.Grayscale(num_output_channels=3),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])

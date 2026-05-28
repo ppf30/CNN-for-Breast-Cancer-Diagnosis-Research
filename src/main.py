@@ -1,15 +1,8 @@
 # main.py
 import os
 import pickle
-import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from pathlib import Path
 from torch.utils.data import DataLoader
-from torch.optim import AdamW
-from torch.optim.lr_scheduler import CosineAnnealingLR
-from sklearn.metrics import roc_auc_score
 from train import train_model
 
 from data.dataset import MammographyROIDataset

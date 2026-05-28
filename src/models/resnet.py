@@ -6,14 +6,14 @@ class ResNet18Embedding(nn.Module):
     def __init__(self, embedding_dim:int = 64, unfreeze_since:str = "fc"):
         """
         ResNet-18 based model for binary classification with an embedding head.
-        This module dapts a pre-trained ResNEt18 nackbone to produce low-dimensional
+        This module dapts a pre-trained ResNEt18 backbone to produce low-dimensional
         embeddings. It supports partial final-tuning by unfreezing layers from a 
         specified point onwards and includes a custom MLP head to project features into
         a embedding space, followed bya linear classifier.
         Args:
         - embedding_dim (int): dimensionality of the embedding space (default: 64)
         - unfreeze_since (str): layer name from which to start unfreezing parameters for 
-        fine-tuning (default: "layer4")
+        fine-tuning (default: "fc")
         """
         super().__init__()
 

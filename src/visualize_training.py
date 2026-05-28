@@ -3,7 +3,6 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from pathlib import Path
 
 
 def plot_training(history_path="training_history.pkl", save_path="training_dashboard.png"):
@@ -33,7 +32,7 @@ def plot_training(history_path="training_history.pkl", save_path="training_dashb
     fig.patch.set_facecolor("#0f1117")
     gs  = gridspec.GridSpec(1, 2, figure=fig, wspace=0.35)
 
-    # ── Plot 1: Train Loss ──────────────────────────────────────────────────
+    # Plot 1: Train Loss 
     ax1 = fig.add_subplot(gs[0])
     ax1.set_facecolor("#0f1117")
     ax1.plot(epochs, losses, color="#3a3f55", linewidth=1.2, alpha=0.6, label="Loss por epoch")
@@ -46,7 +45,7 @@ def plot_training(history_path="training_history.pkl", save_path="training_dashb
     ax1.legend(framealpha=0, labelcolor="#aab0c6", fontsize=9)
     ax1.grid(True, color="#2a2f45", linestyle="--", linewidth=0.6)
 
-    # ── Plot 2: Val AUC ─────────────────────────────────────────────────────
+    #  Plot 2: Val AUC
     ax2 = fig.add_subplot(gs[1])
     ax2.set_facecolor("#0f1117")
     ax2.plot(epochs, aucs, color="#f57c83", linewidth=2.0, label="AUC validación")
