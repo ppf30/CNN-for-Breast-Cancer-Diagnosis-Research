@@ -73,7 +73,7 @@ pip install -r requirements.txt
 
 ```bash
 # Entrenamiento
-python main_unet.py  --model a_unet --epochs 50 --mode train
+python main_unet.py  --model aunet --epochs 50 --mode train
 
 # Evaluación
 python main_unet.py --modelname selected_model --mode test
