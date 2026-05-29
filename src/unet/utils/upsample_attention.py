@@ -31,7 +31,7 @@ class UpSampleAttention(nn.Module):
         # Pass skip connection through attention gate
         skip = self.attention(x, skip)
 
-        # Concat process --> different channels (in//2  + )
+        # Concat process
         x = torch.cat([x,skip],1)
 
         return self.conv(x)
