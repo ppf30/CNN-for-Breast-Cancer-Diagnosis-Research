@@ -24,13 +24,11 @@ class TIFFSegmentationDataset(torch.utils.data.Dataset):
             if f.lower().endswith((".tif", ".tiff"))
         ])
 
-        # filtrar imágenes sin tumor
+        # Filter images
         self.files = []
 
         for f in all_files:
             mask_path = os.path.join(mask_dir, f)
-
-            # si no existe la máscara → se descarta
             if not os.path.exists(mask_path):
                 continue
 
@@ -44,7 +42,7 @@ class TIFFSegmentationDataset(torch.utils.data.Dataset):
         img_path = os.path.join(self.img_dir, name)
         mask_path = os.path.join(self.mask_dir, name)
 
-        # Cargar y copiar para evitar problemas de memoria
+        # Load and copy -> avoid memory issues
         image = tif.imread(img_path).copy()
         mask = tif.imread(mask_path).copy()
 
